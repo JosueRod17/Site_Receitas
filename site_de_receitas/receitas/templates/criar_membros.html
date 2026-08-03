@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Criar Membro</title>
+    <!-- CORREÇÃO DO CAMINHO DO CSS AQUI -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    
+    <h1>Criar Novo Membro</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <!-- O Django vai renderizar os campos um abaixo do outro naturalmente -->
+        {{ form.as_p }} 
+        <button type="submit">💾 Salvar</button>
+    </form>
+
+    <!-- O link de voltar fica embaixo do botão, alinhado à esquerda -->
+    <a href="{% url 'membros' %}" class="btn-voltar">⬅️ Voltar para lista</a>
+
+</body>
+</html>

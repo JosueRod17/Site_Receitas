@@ -1,0 +1,36 @@
+{% load static %}  
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Membros</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Caminho corrigido -->
+</head>
+<body>
+    
+    <!-- NOVO: Envolvendo o título e o botão na classe "topo" -->
+    <div class="topo">
+        <h1>Lista de Membros</h1>
+        <a href="{% url 'adicionar_membros' %}" class="btn-adicionar">➕ Adicionar Novo Membro</a>
+    </div>
+    
+    {% if membros %}
+        {% for membro in membros %}
+        <div class="membro">
+            <!-- NOVO: Envolvendo os dados em "info-membro" e os botões em "acoes-membro" -->
+            <div class="info-membro">
+                <strong>{{ membro.firstname }} {{ membro.lastname }}</strong>
+                <span>📞 {{ membro.telefone }}</span>
+                <span>📅 {{ membro.data_ingresso }}</span>
+            </div>
+            
+            <div class="acoes-membro">
+                <a href="{% url 'editar_membro' membro.id %}" class="btn-editar">✏️ Editar</a>
+                <a href="{% url 'deletar_membro' membro.id %}" class="btn-deletar" onclick="return confirm('Tem certeza?')">🗑️ Deletar</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>Nenhum membro cadastrado ainda.</p>
+    {% endif %}
+</body>
+</html>
