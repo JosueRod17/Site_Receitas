@@ -1,36 +1,79 @@
-{% load static %}  
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Lista de Membros</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Caminho corrigido -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobrevivencia na Cozinha</title>
+    <link rel="preconnect" href="https://images.unsplash.com">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body>
-    
-    <!-- NOVO: Envolvendo o título e o botão na classe "topo" -->
-    <div class="topo">
-        <h1>Lista de Membros</h1>
-        <a href="{% url 'adicionar_membros' %}" class="btn-adicionar">➕ Adicionar Novo Membro</a>
-    </div>
-    
-    {% if membros %}
-        {% for membro in membros %}
-        <div class="membro">
-            <!-- NOVO: Envolvendo os dados em "info-membro" e os botões em "acoes-membro" -->
-            <div class="info-membro">
-                <strong>{{ membro.firstname }} {{ membro.lastname }}</strong>
-                <span>📞 {{ membro.telefone }}</span>
-                <span>📅 {{ membro.data_ingresso }}</span>
-            </div>
-            
-            <div class="acoes-membro">
-                <a href="{% url 'editar_membro' membro.id %}" class="btn-editar">✏️ Editar</a>
-                <a href="{% url 'deletar_membro' membro.id %}" class="btn-deletar" onclick="return confirm('Tem certeza?')">🗑️ Deletar</a>
+<body class="recipe-home">
+    <header class="site-header">
+        <div class="header-row page-width">
+            <a class="brand" href="{% url 'membros' %}" aria-label="Sobrevivencia na Cozinha, inicio">
+                <span class="brand-mark">S</span>
+                <span>Sobrevivencia<small>na cozinha</small></span>
+            </a>
+            <form class="search-box" method="get" action="{% url 'membros' %}">
+                <span aria-hidden="true">⌕</span>
+                <input type="search" name="q" value="{{ query }}" placeholder="Buscar receitas, ingredientes..." aria-label="Buscar receitas">
+            </form>
+            <div class="account-actions">
+                <button class="button button-outline" type="button" data-open-modal="login">Entrar</button>
+                <button class="button" type="button" data-open-modal="signup">Criar conta</button>
             </div>
         </div>
-        {% endfor %}
-    {% else %}
-        <p>Nenhum membro cadastrado ainda.</p>
-    {% endif %}
+        <nav class="category-nav page-width" aria-label="Categorias principais">
+            {% for category in categories %}<a class="{% if active_category == category.category %}active{% endif %}" href="?category={{ category.category|urlencode }}#receitas">{{ category.category }}</a>{% endfor %}<a class="all-categories" href="{% url 'membros' %}#receitas">Todas as categorias ›</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero page-width">
+            <div class="hero-copy">
+                <span class="eyebrow">✦ Receitas para quem não sabe cozinhar</span>
+                <h1>Cozinhar é mais fácil<br>do que você pensa.</h1>
+                <p>Receitas simples, rápidas e deliciosas para quem está começando ou tem pouco tempo. Sem complicação.</p>
+                <div class="hero-actions"><a class="button button-large" href="#receitas">Explorar receitas</a><a class="text-link" href="#categorias">Como funciona ›</a></div>
+                <dl class="stats"><div><dt>Mais de 500</dt><dd>Receitas</dd></div><div><dt>Mais de 20 mil</dt><dd>Inscritos</dd></div><div><dt>4,9</dt><dd>Avaliação</dd></div></dl>
+            </div>
+            <div class="food-mosaic" aria-label="Seleção de pratos apetitosos">
+                <img class="pasta" src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=620&q=80" alt="Massa ao molho de tomate">
+                <img class="cake" src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80" alt="Fatia de bolo de chocolate">
+                <img class="salad" src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=500&q=80" alt="Salada colorida">
+                <img class="chicken" src="https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=620&q=80" alt="Frango assado com legumes">
+            </div>
+        </section>
+
+        <section class="catalog page-width" id="categorias">
+            <div class="section-heading"><div><h2>Explore por Categoria</h2><p>Encontre uma receita certa para cada momento do dia</p></div><a class="text-link" href="#receitas">Ver todas ›</a></div>
+            <div class="category-grid">
+                {% for category in categories %}<a class="category-card {% if forloop.counter0|divisibleby:3 %}mint{% endif %}" href="?category={{ category.category|urlencode }}#receitas"><span>⌁</span><strong>{{ category.category }}</strong><small>{{ category.total }} receita{{ category.total|pluralize }}</small></a>{% empty %}<p class="empty-results">Cadastre a primeira receita no admin para criar categorias.</p>{% endfor %}
+            </div>
+        </section>
+
+        <section class="recipes-section page-width" id="receitas">
+            <div class="section-heading recipes-heading"><div><h2>Receitas em alta</h2><p>As mais salvas e avaliadas da semana</p></div><div class="filter-tabs"><button class="selected" type="button">Mais recentes</button><button type="button">Mais fáceis</button><button type="button">Melhores avaliadas</button></div></div>
+            <div class="recipe-grid">
+                {% for recipe in recipes %}
+                <article class="recipe-card" tabindex="0" data-category="{{ recipe.category }}" data-recipe="{{ recipe.title }}"><img src="{{ recipe.image_url }}" alt="{{ recipe.title }}"><span class="tag">{{ recipe.category }}</span><span class="rating">★ {{ recipe.rating }}</span><div><h3>{{ recipe.title }}</h3><p>◷ {{ recipe.prep_time }} minutos &nbsp; · &nbsp; {{ recipe.difficulty }}</p></div></article>
+                {% empty %}
+                <p class="empty-results">Nenhuma receita encontrada. Cadastre receitas no admin ou tente outra busca.</p>
+                {% endfor %}
+            </div>
+            <div class="load-more"><button class="button button-outline" type="button" id="load-more">Carregar mais receitas</button></div>
+        </section>
+
+        <section class="newsletter"><div class="newsletter-inner page-width"><div><h2>Receita nova toda semana no seu<br>e-mail</h2><p>Mais de 20.000 cozinheiros já recebem. Cancele quando quiser.</p></div><form id="newsletter-form"><label class="sr-only" for="newsletter-email">Seu e-mail</label><input id="newsletter-email" type="email" placeholder="seu@email.com" required><button class="button button-dark" type="submit">Quero receber</button></form></div></section>
+    </main>
+    <footer class="site-footer"><div class="page-width footer-grid"><div><a class="brand" href="#top"><span class="brand-mark">S</span><span>Sobrevivência na Cozinha</span></a><p>Receitas simples para todos os níveis.<br>Porque todo mundo merece cozinhar bem.</p></div><div><strong>Receitas</strong><a href="#categorias">Café da Manhã</a><a href="#categorias">Almoço</a><a href="#categorias">Jantar</a><a href="#categorias">Sobremesas</a><a href="#categorias">Lanches</a></div><div><strong>Conta</strong><button type="button" data-open-modal="login">Entrar</button><button type="button" data-open-modal="signup">Cadastrar</button><a href="#receitas">Minhas Receitas</a><a href="#receitas">Favoritos</a></div><div><strong>Site</strong><a href="#top">Sobre nós</a><a href="#receitas">Blog</a><a href="#contato">Contato</a><a href="#privacidade">Política de Privacidade</a></div></div><div class="footer-bottom page-width">© 2025 Sobrevivência na Cozinha. Todos os direitos reservados.</div></footer>
+
+    <div class="modal-backdrop" id="modal-backdrop" hidden>
+        <section class="auth-modal" id="login-modal" aria-modal="true" role="dialog" aria-labelledby="login-title" hidden><button class="modal-close" type="button" aria-label="Fechar">×</button><h2 id="login-title">Bem-vindo de volta</h2><p>Entre em sua conta para continuar</p><form class="auth-form" action="{% url 'signin' %}" method="post">{% csrf_token %}<label>E-mail<input type="email" name="email" placeholder="seu@email.com" required></label><label>Senha<input type="password" name="password" placeholder="••••••••" required></label><div class="form-options"><label><input type="checkbox"> Lembrar-me</label><a href="#">Esqueci a senha</a></div><button class="button auth-submit" type="submit">Entrar</button></form><div class="or-divider">Ou</div><div class="social-login"><button type="button">Google</button><button type="button">Facebook</button></div><p class="auth-switch">Não tem conta? <button type="button" data-open-modal="signup">Cadastre-se</button></p></section>
+        <section class="auth-modal" id="signup-modal" aria-modal="true" role="dialog" aria-labelledby="signup-title" hidden><button class="modal-close" type="button" aria-label="Fechar">×</button><h2 id="signup-title">Crie sua conta</h2><p>Acesse receitas e salve suas favoritas</p><form class="auth-form" action="{% url 'signup' %}" method="post">{% csrf_token %}<label>E-mail<input type="email" name="email" placeholder="seu@email.com" required></label><label>Senha<input type="password" name="password1" placeholder="Mínimo 8 caracteres" minlength="8" required></label><label>Confirmar senha<input type="password" name="password2" placeholder="••••••••" minlength="8" required></label><label class="terms"><input type="checkbox" required> Concordo com os <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a></label><button class="button auth-submit" type="submit">Criar Conta</button></form><div class="or-divider">Ou</div><div class="social-login"><button type="button">Google</button><button type="button">Facebook</button></div><p class="auth-switch">Já tem conta? <button type="button" data-open-modal="login">Entre aqui</button></p></section>
+        <section class="recipe-modal" id="recipe-modal" aria-modal="true" role="dialog" aria-labelledby="recipe-modal-title" hidden><button class="modal-close" type="button" aria-label="Fechar">×</button><p class="eyebrow">Receita selecionada</p><h2 id="recipe-modal-title"></h2><p>Abra sua receita favorita para ver ingredientes, modo de preparo e salvar nos seus favoritos.</p><button class="button" type="button" data-open-modal="signup">Criar conta para salvar</button></section>
+    </div>
+    <script src="{% static 'js/site.js' %}"></script>
 </body>
 </html>

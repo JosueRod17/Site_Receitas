@@ -1,12 +1,52 @@
+from django.contrib import messages
+from django.contrib.auth import authenticate, login
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import MembrosForm
-from .models import Membros
+from .forms import MembrosForm, SignupForm
+from .models import Membros, Recipe
 
 
 def listar_membros(request):
-    lista = Membros.objects.all().order_by('firstname')
-    return render(request, "index.html", {"membros": lista})
+    query = request.GET.get("q", "").strip()
+    category = request.GET.get("category", "").strip()
+    recipes = Recipe.objects.all()
+    if query:
+        recipes = recipes.filter(Q(title__icontains=query) | Q(category__icontains=query))
+    if category:
+        recipes = recipes.filter(category=category)
+    return render(request, "index.html", {
+        "recipes": recipes,
+        "query": query,
+        "active_category": category,
+        "categories": Recipe.objects.values("category").annotate(total=Count("id")).order_by("category"),
+    })
+
+
+def signup(request):
+    if request.method != "POST":
+        return redirect("membros")
+    form = SignupForm(request.POST)
+    if form.is_valid():
+        user = form.save()
+        login(request, user)
+        messages.success(request, "Conta criada com sucesso.")
+    else:
+        messages.error(request, "Não foi possível criar a conta. Verifique os dados.")
+    return redirect("membros")
+
+
+def signin(request):
+    if request.method != "POST":
+        return redirect("membros")
+    email = request.POST.get("email", "").lower()
+    user = authenticate(request, username=email, password=request.POST.get("password", ""))
+    if user is None:
+        messages.error(request, "E-mail ou senha inválidos.")
+    else:
+        login(request, user)
+        messages.success(request, "Login realizado com sucesso.")
+    return redirect("membros")
 
 def criar_membros(request):
     if request.method == "POST":

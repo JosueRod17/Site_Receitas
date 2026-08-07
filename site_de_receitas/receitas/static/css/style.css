@@ -1,238 +1,51 @@
-/* ==========================================================================
-   1. CONFIGURAÇÕES GLOBAIS (Reset e Fundo da Página)
-   ========================================================================== */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #132219; }
 
-/* O asterisco (*) seleciona TODOS os elementos da página. Isso é o "Reset CSS". */
-* {
-    margin: 0;              /* Remove todos os espaços vazios externos padrão. */
-    padding: 0;             /* Remove todos os espaços vazios internos padrão. */
-    box-sizing: border-box; /* Garante que bordas e paddings sejam calculados DENTRO da largura definida. */
-}
+/* Homepage */
+.recipe-home { background: #f8f6f2; font-size: 12px; }
+.page-width { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+.site-header { background: #fff; border-top: 4px solid #303030; }
+.header-row { height: 77px; display: grid; grid-template-columns: 235px minmax(260px, 1fr) 210px; align-items: center; gap: 28px; }
+.brand { display: inline-flex; align-items: center; gap: 8px; color: #102318; font-size: 13px; font-weight: 700; line-height: 1; text-decoration: none; }
+.brand small { display: block; font-size: 9px; font-weight: 400; margin-top: 3px; }
+.brand-mark { width: 23px; height: 23px; display: grid; place-items: center; border-radius: 6px; background: #2d865a; color: #fff; font-size: 13px; }
+.search-box { height: 36px; display: flex; align-items: center; padding: 0 12px; gap: 8px; border: 1px solid #d9dcda; border-radius: 8px; background: #f7f7f7; color: #6e786f; }
+.search-box input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: #27332a; font-size: 11px; }
+.account-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.button { display: inline-flex; justify-content: center; align-items: center; min-height: 31px; padding: 0 13px; background: #278657; border: 1px solid #278657; border-radius: 7px; color: white; font-size: 10px; font-weight: 700; text-decoration: none; cursor: pointer; }
+.button:hover { background: #166b41; border-color: #166b41; }
+.button-outline { background: #fff; color: #246c49; border-color: #d5ded8; }
+.category-nav { height: 34px; display: flex; align-items: center; gap: 27px; border-top: 1px solid #edf0ed; white-space: nowrap; }
+.category-nav a { color: #536158; text-decoration: none; font-size: 10px; }
+.category-nav a.active { padding: 6px 13px; border-radius: 7px; background: #d8f1e3; color: #24764d; font-weight: 700; }
+.category-nav .all-categories { margin-left: auto; }
+.hero { min-height: 347px; display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding-top: 46px; padding-bottom: 36px; }
+.hero-copy { max-width: 460px; }
+.eyebrow { display: inline-block; padding: 6px 11px; border-radius: 7px; color: #28815a; background: #daf0e4; font-size: 9px; font-weight: 700; }
+h1 { margin: 20px 0 16px; font-size: clamp(30px, 3vw, 41px); line-height: 1.15; letter-spacing: 0; }
+.hero-copy > p { max-width: 410px; color: #6b746e; line-height: 1.6; font-size: 12px; }
+.hero-actions { display: flex; align-items: center; gap: 18px; margin-top: 24px; }
+.button-large { min-height: 39px; padding: 0 16px; }
+.text-link { color: #28815a; text-decoration: none; font-size: 10px; font-weight: 700; }
+.stats { display: flex; gap: 38px; margin: 31px 0 0; }
+.stats div { position: relative; }
+.stats div + div::before { content: ''; width: 1px; height: 25px; position: absolute; left: -20px; top: 2px; background: #e1e2df; }
+.stats dt { font-size: 15px; font-weight: 700; }.stats dd { margin: 3px 0 0; color: #7d827e; font-size: 9px; }
+.food-mosaic { height: 224px; display: grid; grid-template-columns: 1fr 1.05fr; grid-template-rows: 1fr 1fr; gap: 8px; max-width: 408px; justify-self: end; }
+.food-mosaic img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }.pasta { grid-row: 1; }.cake { grid-row: 1; }.salad { grid-row: 2; }.chicken { grid-row: 2; }
+.catalog { background: #fff; padding-top: 35px; padding-bottom: 56px; }
+.recipe-home main { background: #f8f6f2; }.recipe-home .catalog { width: 100%; padding-left: max(24px, calc((100% - 1120px)/2)); padding-right: max(24px, calc((100% - 1120px)/2)); }
+.section-heading { display: flex; align-items: end; justify-content: space-between; margin-bottom: 24px; }.section-heading h2 { margin: 0 0 5px; font-size: 17px; }.section-heading p { color: #7a817d; font-size: 10px; margin: 0; }
+.category-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 9px; }.category-card { min-height: 85px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 14px; background: #f5f3f0; color: #1c2b21; text-decoration: none; text-align: center; }.category-card.mint { background: #d9f1e4; }.category-card span { width: 28px; height: 28px; display: grid; place-items: center; margin-bottom: 6px; border-radius: 8px; background: #fff; color: #23764d; font-size: 15px; }.category-card strong { font-size: 9px; }.category-card small { margin-top: 3px; color: #788079; font-size: 8px; }
+.recipes-section { padding-top: 43px; padding-bottom: 50px; }.filter-tabs { display: flex; gap: 7px; }.filter-tabs button { height: 29px; padding: 0 10px; border: 1px solid #dae0db; border-radius: 7px; background: #fff; color: #788079; font-size: 9px; cursor: pointer; }.filter-tabs button.selected { color: #285f42; font-weight: 700; }
+.recipe-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }.recipe-card { position: relative; min-width: 0; overflow: hidden; border: 1px solid #dce0dc; border-radius: 11px; background: #fff; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; }.recipe-card:hover, .recipe-card:focus { transform: translateY(-4px); outline: 0; box-shadow: 0 12px 22px rgba(23, 52, 35, .13); }.recipe-card > img { width: 100%; height: 130px; display: block; object-fit: cover; }.recipe-card > div { min-height: 62px; padding: 10px 11px; }.recipe-card h3 { overflow: hidden; margin: 0 0 7px; color: #1d2921; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }.recipe-card p { margin: 0; color: #7a817c; font-size: 9px; }.tag, .rating { position: absolute; top: 8px; padding: 4px 7px; border-radius: 7px; background: rgba(255,255,255,.95); font-size: 8px; font-weight: 700; }.tag { left: 8px; }.rating { right: 8px; color: #28794f; }
+.load-more { display: flex; justify-content: center; margin-top: 32px; }.load-more .button-outline { color: #52645a; }.load-more .button:disabled { cursor: default; opacity: .7; }
+.newsletter { background: #298657; color: #fff; }.newsletter-inner { min-height: 176px; display: flex; align-items: center; justify-content: space-between; gap: 25px; }.newsletter h2 { margin: 0 0 10px; font-size: 21px; line-height: 1.1; }.newsletter p { margin: 0; font-size: 10px; }.newsletter form { display: flex; gap: 9px; }.newsletter input { width: 230px; height: 38px; padding: 0 13px; border: 0; border-radius: 7px; outline: 0; }.button-dark { background: #153427; border-color: #153427; }.button-dark:hover { background: #0c241a; border-color: #0c241a; }
+.site-footer { background: #fff; }.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 35px; padding: 40px 0 34px; }.footer-grid > div { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; }.footer-grid .brand { margin-bottom: 10px; }.footer-grid p { margin: 0; color: #7a817c; font-size: 10px; line-height: 1.55; }.footer-grid strong { margin-bottom: 6px; font-size: 10px; }.footer-grid a, .footer-grid button { padding: 0; border: 0; background: transparent; color: #66726a; font: inherit; font-size: 10px; text-align: left; text-decoration: none; cursor: pointer; }.footer-grid a:hover, .footer-grid button:hover { color: #278657; }.footer-bottom { padding: 18px 0 24px; border-top: 1px solid #edf0ed; color: #88918b; font-size: 8px; }
+.modal-open { overflow: hidden; }.modal-backdrop { position: fixed; z-index: 20; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(15, 28, 20, .52); }.modal-backdrop[hidden], .auth-modal[hidden], .recipe-modal[hidden] { display: none !important; }.auth-modal, .recipe-modal { position: relative; width: min(100%, 390px); padding: 33px 28px 27px; border-radius: 14px; background: #fff; box-shadow: 0 24px 60px rgba(0, 0, 0, .25); }.auth-modal h2, .recipe-modal h2 { margin: 0 0 7px; font-size: 25px; }.auth-modal > p, .recipe-modal > p { margin: 0 0 24px; color: #758077; font-size: 12px; }.modal-close { position: absolute; top: 17px; right: 19px; width: 28px; height: 28px; border: 0; background: transparent; color: #798179; font-size: 25px; line-height: 1; cursor: pointer; }.auth-form { display: grid; gap: 12px; }.auth-form > label { display: grid; gap: 6px; color: #202a23; font-size: 11px; font-weight: 700; }.auth-form input:not([type="checkbox"]) { width: 100%; height: 41px; padding: 0 12px; border: 1px solid #e0e4e0; border-radius: 9px; background: #f7f8f7; outline-color: #278657; }.form-options { display: flex; align-items: center; justify-content: space-between; color: #788179; font-size: 10px; }.form-options label, .terms { color: #788179 !important; font-size: 9px !important; font-weight: 400 !important; }.form-options a, .terms a, .auth-switch button { color: #218153; text-decoration: none; }.auth-submit { width: 100%; min-height: 42px; margin-top: 7px; font-size: 13px; }.or-divider { display: flex; align-items: center; gap: 10px; margin: 17px 0; color: #8c948e; font-size: 10px; text-align: center; }.or-divider::before, .or-divider::after { content: ''; height: 1px; flex: 1; background: #e5e9e6; }.social-login { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }.social-login button { height: 39px; border: 1px solid #e1e5e1; border-radius: 9px; background: #fff; font-weight: 700; cursor: pointer; }.auth-switch { margin: 21px 0 0 !important; text-align: center; }.auth-switch button { padding: 0; border: 0; background: transparent; font: inherit; font-weight: 700; cursor: pointer; }.recipe-modal { text-align: center; }.recipe-modal .eyebrow { margin-bottom: 15px; }.recipe-modal .button { margin-top: 4px; }.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 
-/* Estilo aplicado ao corpo (body) da página HTML */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Define uma fonte moderna. */
-    background-color: #f3f6f9; /* Define um fundo cinza-azulado bem suave. */
-    padding: 40px;           /* Cria um "respiro" nas bordas externas. */
-    display: flex;           /* Transforma o body em um container flexível. */
-    flex-direction: column;  /* Diz para o flexbox empilhar os itens um em cima do outro (em coluna). */
-    align-items: center;     /* Centraliza todos os blocos no meio da tela na horizontal. */
-    min-height: 100vh;       /* Garante que o fundo ocupe 100% da altura da tela do usuário. */
-}
+/* Existing member forms */
+body:not(.recipe-home) { max-width: 850px; margin: 48px auto; padding: 0 24px; background: #f3f6f9; } body:not(.recipe-home) form { padding: 28px; background: #fff; border-radius: 8px; } body:not(.recipe-home) input { width: 100%; padding: 10px; } body:not(.recipe-home) button { padding: 10px 16px; background: #278657; border: 0; border-radius: 6px; color: #fff; }
 
-
-/* ==========================================================================
-   2. ESTILO DOS CARTÕES (Topo e Lista de Membros)
-   ========================================================================== */
-
-/* Aplica um estilo padrão tanto para o cabeçalho (div.topo) quanto para a lista de membros (div.membro) */
-div.topo, 
-div.membro {
-    width: 100%;             /* Ocupa 100% da largura disponível. */
-    max-width: 850px;        /* Impede que ultrapasse 850px em telas grandes. */
-    background: #ffffff;     /* Fundo branco, criando o efeito de "cartão". */
-    border-radius: 18px;     /* Arredondamento bonito das bordas. */
-    margin-bottom: 35px;     /* Espaço de 35px entre o cartão de cima e o de baixo. */
-    box-shadow: 0 20px 50px rgba(15,23,42,.08), 0 10px 25px rgba(15,23,42,.05); /* Duas camadas de sombra suave para dar profundidade. */
-}
-
-/* Ajuste de espaçamento interno exclusivo do Topo */
-div.topo {
-    padding: 40px 50px;      /* Espaço interno do cabeçalho. */
-}
-
-/* Ajuste de espaçamento interno exclusivo dos Membros */
-div.membro {
-    padding: 25px 40px;      /* Espaço interno da lista. */
-}
-
-
-/* ==========================================================================
-   3. AJUSTE INTERNO DO TOPO (Índex)
-   ========================================================================== */
-
-div.topo {
-    display: flex;           /* Ativa o Flexbox dentro do cabeçalho. */
-    justify-content: space-between; /* Joga o Título para a esquerda e o Botão para a direita. */
-    align-items: center;     /* Centraliza o título e o botão na vertical. */
-}
-
-div.topo h1 {
-    font-size: 26px;         /* Tamanho da fonte do título. */
-    color: #1a202c;          /* Cor cinza bem escuro. */
-    margin: 0;               /* Remove a margem padrão do título. */
-}
-
-/* Botão verde "Adicionar Novo Membro" */
-.btn-adicionar {
-    background-color: #38a169; /* Fundo verde. */
-    color: #fff;               /* Texto branco. */
-    padding: 12px 24px;        /* Tamanho interno do botão. */
-    border-radius: 8px;        /* Bordas arredondadas. */
-    text-decoration: none;     /* Remove o sublinhado do link. */
-    font-weight: 600;          /* Deixa o texto negrito. */
-    transition: 0.2s;          /* Cria uma animação suave de 0.2s. */
-}
-.btn-adicionar:hover {
-    background-color: #2f855a; /* Ao passar o mouse, o verde fica um tom mais escuro. */
-}
-
-
-/* ==========================================================================
-   4. AJUSTE INTERNO DA LISTA DE MEMBROS
-   ========================================================================== */
-
-div.membro {
-    display: flex;           /* Ativa o Flexbox para alinhar as informações na horizontal. */
-    justify-content: space-between; /* Informações na esquerda, botões na direita. */
-    align-items: center;     /* Centraliza na vertical. */
-}
-
-.info-membro {
-    display: flex;           /* Flexbox para alinhar Nome, Telefone e Data lado a lado. */
-    align-items: center;     /* Centraliza na vertical. */
-    gap: 15px;               /* Espaço de 15px entre o nome, telefone e data. */
-    flex-wrap: wrap;         /* Se faltar espaço, ele joga o telefone para a linha de baixo. */
-}
-.info-membro strong {
-    font-size: 17px;         /* Tamanho do nome. */
-}
-.info-membro span {
-    background: #edf2f7;     /* Fundo cinza clarinho em volta do telefone/data. */
-    padding: 4px 12px;       /* Espaço dentro desse fundo. */
-    border-radius: 20px;     /* Transforma o fundo em uma "pílula" redonda. */
-    font-size: 14px;         /* Tamanho da fonte. */
-    color: #4a5568;          /* Cor do texto. */
-}
-
-.acoes-membro {
-    display: flex;           /* Flexbox para colocar Editar e Deletar lado a lado. */
-    gap: 10px;               /* Espaço de 10px entre os dois botões. */
-}
-.acoes-membro a {
-    text-decoration: none;   /* Remove o sublinhado. */
-    font-size: 14px;         /* Tamanho da fonte. */
-    font-weight: 600;        /* Deixa em negrito. */
-    padding: 6px 12px;       /* Espaço interno pequeno. */
-    border-radius: 6px;      /* Bordas arredondadas. */
-}
-.btn-editar { background: #fefcbf; color: #975a16; } /* Amarelo claro, texto marrom */
-.btn-deletar { background: #fed7d7; color: #9b2c2c; } /* Vermelho claro, texto vermelho escuro */
-
-
-/* ==========================================================================
-   5. FORMULÁRIOS (Páginas CRIAR e EDITAR) - MELHORADOS!
-   ========================================================================== */
-
-/* O Django cria os formulários usando a tag <p> para cada campo. */
-form p {
-    margin-bottom: 25px;     /* Espaço arejado entre um campo e outro. */
-    width: 100%;             /* Garante que o campo ocupe a tela toda. */
-}
-
-/* Rótulos (Labels) dos campos: Ex: "Primeiro Nome:" */
-label {
-    display: block;          /* Faz o rótulo ocupar uma linha inteira, forçando o input a ficar embaixo. */
-    font-weight: 700;        /* Coloca o rótulo em negrito. */
-    color: #2d3748;          /* Cor cinza escuro. */
-    margin-bottom: 8px;      /* Espaço de 8px entre o rótulo e a caixa de digitação. */
-    font-size: 15px;         /* Tamanho da fonte. */
-}
-
-/* As caixas de texto (Inputs) e menus (Selects) */
-input[type="text"], input[type="email"], input[type="date"], select, textarea {
-    width: 100%;             /* A caixa ocupa 100% da largura. */
-    padding: 14px 16px;      /* Deixa a caixa bem grandinha e confortável para digitar. */
-    border: 1px solid #d1d5db; /* Borda cinza suave. */
-    border-radius: 10px;     /* Bordas arredondadas. */
-    font-size: 16px;         /* Tamanho da letra dentro da caixa. */
-    background-color: #f9fafb; /* Fundo da caixa levemente cinza. */
-    transition: 0.2s;        /* Animação suave para quando o usuário clicar na caixa. */
-    color: #1f2937;          /* Cor da letra que o usuário digitar. */
-}
-
-/* Efeito de Foco: Quando o usuário clica dentro da caixa para digitar */
-input:focus, select:focus, textarea:focus {
-    border-color: #4f46e5;   /* A borda muda para um azul/roxo bonito. */
-    background-color: #ffffff; /* O fundo fica completamente branco. */
-    outline: none;           /* Remove o brilho padrão feio do navegador. */
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); /* Cria um "halo" azul suave ao redor da caixa. */
-}
-
-/* Botão de Salvar (Azul) */
-button[type="submit"] {
-    width: 100%;             /* Opcional: se quiser o botão ocupando a tela toda. Se preferir pequeno, troque por 'display: inline-block;' e remova a largura. */
-    display: block;          /* Garante que ele ocupe a linha inteira. */
-    padding: 16px 30px;      /* Botão bem grandão. */
-    background: #4f46e5;     /* Fundo azul/roxo. */
-    color: #fff;             /* Texto branco. */
-    border: none;            /* Sem borda. */
-    border-radius: 10px;     /* Bordas arredondadas. */
-    font-weight: 700;        /* Texto negrito. */
-    font-size: 16px;         /* Tamanho da fonte. */
-    cursor: pointer;         /* Mostra a "mãozinha" ao passar o mouse. */
-    margin-top: 10px;        /* Espaço acima do botão. */
-    transition: 0.2s;        /* Animação suave. */
-}
-button[type="submit"]:hover {
-    background: #4338ca;     /* Ao passar o mouse, a cor fica um pouco mais escura. */
-    transform: translateY(-2px); /* O botão "flutua" levemente para cima. */
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); /* Aparece uma sombra azul embaixo dele. */
-}
-
-/* Botão de Voltar para lista */
-.btn-voltar {
-    display: inline-block;   /* Permite que ele receba margem, mesmo sendo um link. */
-    margin-top: 30px;        /* Espaço grande acima para separar do botão Salvar. */
-    color: #6b7280;          /* Cor cinza médio. */
-    text-decoration: none;   /* Remove o sublinhado. */
-    font-weight: 600;        /* Negrito. */
-    font-size: 15px;         /* Tamanho da fonte. */
-    transition: 0.2s;        /* Animação. */
-}
-.btn-voltar:hover {
-    color: #374151;          /* Ao passar o mouse, fica mais escuro. */
-}
-
-
-/* ==========================================================================
-   6. PÁGINA CONFIRMAR DELETAR
-   ========================================================================== */
-
-body#confirmar_deletar {
-    display: block;          /* Desativa o flexbox do body geral e volta ao fluxo normal de bloco. */
-}
-
-/* Texto da pergunta vermelha */
-body#confirmar_deletar .pergunta_deletar {
-    color: #dc2626;          /* Vermelho forte. */
-    font-weight: 700;        /* Negrito. */
-    font-size: 18px;         /* Fonte maior. */
-    margin: 35px 0;          /* Espaço grande em cima e embaixo. */
-    text-align: center;      /* Texto centralizado. */
-}
-
-/* Botão vermelho "Sim, deletar" */
-body#confirmar_deletar .botao_deletar {
-    background-color: #dc2626; /* Vermelho. */
-}
-body#confirmar_deletar .botao_deletar:hover {
-    background-color: #b91c1c; /* Vermelho mais escuro ao passar o mouse. */
-}
-
-/* Botão cinza "Cancelar" */
-body#confirmar_deletar .botao_cancelar {
-    display: inline-block;   /* Funciona como um botão. */
-    background: #9ca3af;     /* Fundo cinza. */
-    color: #fff;             /* Texto branco. */
-    padding: 12px 30px;      /* Tamanho interno. */
-    border-radius: 8px;      /* Bordas arredondadas. */
-    margin-left: 15px;       /* Espaço de 15px separando ele do botão vermelho. */
-    text-decoration: none;   /* Remove sublinhado. */
-    font-weight: 600;        /* Negrito. */
-    transition: 0.2s;        /* Animação. */
-}
-body#confirmar_deletar .botao_cancelar:hover {
-    background: #6b7280;     /* Cinza mais escuro ao passar o mouse. */
-    color: #ffffff;          /* O texto continua branco. */
-}
+@media (max-width: 800px) { .header-row { height: auto; min-height: 68px; grid-template-columns: 1fr auto; gap: 12px; padding-top: 12px; padding-bottom: 12px; }.search-box { grid-row: 2; grid-column: 1 / -1; }.category-nav { overflow-x: auto; gap: 18px; }.category-nav .all-categories { margin-left: 0; }.hero { grid-template-columns: 1fr; gap: 28px; }.food-mosaic { width: 100%; max-width: none; justify-self: stretch; }.category-grid { grid-template-columns: repeat(4, 1fr); }.recipe-grid { grid-template-columns: repeat(2, 1fr); }.recipes-heading { align-items: flex-start; gap: 15px; flex-direction: column; }.newsletter-inner { min-height: 210px; align-items: flex-start; justify-content: center; flex-direction: column; }.footer-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 460px) { .page-width { width: min(100% - 32px, 1120px); }.account-actions { gap: 5px; }.button { padding: 0 9px; }.hero { padding-top: 34px; }.category-grid { grid-template-columns: repeat(2, 1fr); }.food-mosaic { height: 190px; }.filter-tabs { width: 100%; overflow-x: auto; }.recipe-card > img { height: 112px; }.newsletter h2 { font-size: 18px; }.newsletter form { width: 100%; }.newsletter input { min-width: 0; flex: 1; }.footer-grid { grid-template-columns: 1fr 1fr; gap: 25px 15px; }.auth-modal, .recipe-modal { padding: 31px 20px 23px; }.auth-modal h2, .recipe-modal h2 { font-size: 22px; } }
