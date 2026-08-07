@@ -21,6 +21,7 @@ class MembrosForm(forms.ModelForm):
 
 
 class SignupForm(forms.Form):
+    nickname = forms.CharField(max_length=30)
     email = forms.EmailField()
     password1 = forms.CharField(min_length=8, widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
@@ -41,5 +42,37 @@ class SignupForm(forms.Form):
         return User.objects.create_user(
             username=self.cleaned_data["email"],
             email=self.cleaned_data["email"],
+            first_name=self.cleaned_data["nickname"],
             password=self.cleaned_data["password1"],
         )
+
+
+class ProfileForm(forms.Form):
+    nickname = forms.CharField(max_length=30)
+    current_password = forms.CharField(required=False, widget=forms.PasswordInput)
+    new_password1 = forms.CharField(required=False, min_length=8, widget=forms.PasswordInput)
+    new_password2 = forms.CharField(required=False, widget=forms.PasswordInput)
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        self.fields["nickname"].initial = user.first_name
+
+    def clean(self):
+        data = super().clean()
+        password_fields = (data.get("current_password"), data.get("new_password1"), data.get("new_password2"))
+        if any(password_fields):
+            if not all(password_fields):
+                raise forms.ValidationError("Preencha todos os campos de senha para alterá-la.")
+            if not self.user.check_password(data["current_password"]):
+                self.add_error("current_password", "A senha atual está incorreta.")
+            if data["new_password1"] != data["new_password2"]:
+                self.add_error("new_password2", "As novas senhas não coincidem.")
+        return data
+
+    def save(self):
+        self.user.first_name = self.cleaned_data["nickname"]
+        if self.cleaned_data.get("new_password1"):
+            self.user.set_password(self.cleaned_data["new_password1"])
+        self.user.save()
+        return self.user

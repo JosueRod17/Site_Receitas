@@ -1,0 +1,10 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Meu perfil | Sobrevivência na Cozinha</title><link rel="stylesheet" href="{% static 'css/style.css' %}"></head>
+<body class="recipe-home profile-page">
+    <header class="site-header"><div class="header-row page-width"><a class="brand" href="{% url 'dashboard' %}"><span class="brand-mark">S</span><span>Sobrevivência<small>na cozinha</small></span></a><div></div><div class="account-actions"><a class="user-account" href="{% url 'dashboard' %}"><span class="user-avatar">{{ user.first_name|first|upper }}</span>{{ user.first_name }}</a></div></div></header>
+    <main class="profile-main page-width"><a class="back-link" href="{% url 'dashboard' %}">‹ Voltar para receitas</a><section class="profile-panel"><h1>Meu perfil</h1><p>Edite seu apelido e, quando precisar, troque sua senha.</p><form method="post" class="profile-form">{% csrf_token %}{% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}<label>Apelido{{ form.nickname }}</label><label>Senha atual{{ form.current_password }}</label><label>Nova senha{{ form.new_password1 }}</label><label>Confirmar nova senha{{ form.new_password2 }}</label>{% for field in form %}{% for error in field.errors %}<p class="form-error">{{ error }}</p>{% endfor %}{% endfor %}<button class="button" type="submit">Salvar alterações</button></form></section></main>
+    <script src="{% static 'js/site.js' %}"></script>
+</body>
+</html>

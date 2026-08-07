@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body class="recipe-home">
+    {% if messages %}<div class="flash-messages" role="alert">{% for message in messages %}<p class="flash-message {{ message.tags }}">{{ message }}</p>{% endfor %}</div>{% endif %}
     <header class="site-header">
         <div class="header-row page-width">
             <a class="brand" href="{% url 'membros' %}" aria-label="Sobrevivencia na Cozinha, inicio">
@@ -20,8 +21,13 @@
                 <input type="search" name="q" value="{{ query }}" placeholder="Buscar receitas, ingredientes..." aria-label="Buscar receitas">
             </form>
             <div class="account-actions">
+                {% if user.is_authenticated %}
+                <a class="user-account" href="{% url 'profile' %}"><span class="user-avatar">{{ user.first_name|first|upper }}</span>{{ user.first_name|default:user.email }}</a>
+                <form action="{% url 'signout' %}" method="post">{% csrf_token %}<button class="button button-outline" type="submit">Sair</button></form>
+                {% else %}
                 <button class="button button-outline" type="button" data-open-modal="login">Entrar</button>
                 <button class="button" type="button" data-open-modal="signup">Criar conta</button>
+                {% endif %}
             </div>
         </div>
         <nav class="category-nav page-width" aria-label="Categorias principais">
@@ -57,7 +63,7 @@
             <div class="section-heading recipes-heading"><div><h2>Receitas em alta</h2><p>As mais salvas e avaliadas da semana</p></div><div class="filter-tabs"><button class="selected" type="button">Mais recentes</button><button type="button">Mais fáceis</button><button type="button">Melhores avaliadas</button></div></div>
             <div class="recipe-grid">
                 {% for recipe in recipes %}
-                <article class="recipe-card" tabindex="0" data-category="{{ recipe.category }}" data-recipe="{{ recipe.title }}"><img src="{{ recipe.image_url }}" alt="{{ recipe.title }}"><span class="tag">{{ recipe.category }}</span><span class="rating">★ {{ recipe.rating }}</span><div><h3>{{ recipe.title }}</h3><p>◷ {{ recipe.prep_time }} minutos &nbsp; · &nbsp; {{ recipe.difficulty }}</p></div></article>
+                <article class="recipe-card"><a class="recipe-link" href="{% url 'recipe_detail' recipe.id %}"><img src="{{ recipe.image_url }}" alt="{{ recipe.title }}"><span class="tag">★ {{ recipe.average_rating|floatformat:1 }}</span><span class="rating">{{ recipe.category }}</span><div><h3>{{ recipe.title }}</h3><p>◷ {{ recipe.prep_time }} minutos &nbsp; · &nbsp; {{ recipe.difficulty }}</p></div></a></article>
                 {% empty %}
                 <p class="empty-results">Nenhuma receita encontrada. Cadastre receitas no admin ou tente outra busca.</p>
                 {% endfor %}
@@ -71,7 +77,7 @@
 
     <div class="modal-backdrop" id="modal-backdrop" hidden>
         <section class="auth-modal" id="login-modal" aria-modal="true" role="dialog" aria-labelledby="login-title" hidden><button class="modal-close" type="button" aria-label="Fechar">×</button><h2 id="login-title">Bem-vindo de volta</h2><p>Entre em sua conta para continuar</p><form class="auth-form" action="{% url 'signin' %}" method="post">{% csrf_token %}<label>E-mail<input type="email" name="email" placeholder="seu@email.com" required></label><label>Senha<input type="password" name="password" placeholder="••••••••" required></label><div class="form-options"><label><input type="checkbox"> Lembrar-me</label><a href="#">Esqueci a senha</a></div><button class="button auth-submit" type="submit">Entrar</button></form><div class="or-divider">Ou</div><div class="social-login"><button type="button">Google</button><button type="button">Facebook</button></div><p class="auth-switch">Não tem conta? <button type="button" data-open-modal="signup">Cadastre-se</button></p></section>
-        <section class="auth-modal" id="signup-modal" aria-modal="true" role="dialog" aria-labelledby="signup-title" hidden><button class="modal-close" type="button" aria-label="Fechar">×</button><h2 id="signup-title">Crie sua conta</h2><p>Acesse receitas e salve suas favoritas</p><form class="auth-form" action="{% url 'signup' %}" method="post">{% csrf_token %}<label>E-mail<input type="email" name="email" placeholder="seu@email.com" required></label><label>Senha<input type="password" name="password1" placeholder="Mínimo 8 caracteres" minlength="8" required></label><label>Confirmar senha<input type="password" name="password2" placeholder="••••••••" minlength="8" required></label><label class="terms"><input type="checkbox" required> Concordo com os <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a></label><button class="button auth-submit" type="submit">Criar Conta</button></form><div class="or-divider">Ou</div><div class="social-login"><button type="button">Google</button><button type="button">Facebook</button></div><p class="auth-switch">Já tem conta? <button type="button" data-open-modal="login">Entre aqui</button></p></section>
+        <section class="auth-modal" id="signup-modal" aria-modal="true" role="dialog" aria-labelledby="signup-title" hidden><button class="modal-close" type="button" aria-label="Fechar">×</button><h2 id="signup-title">Crie sua conta</h2><p>Acesse receitas e salve suas favoritas</p><form class="auth-form" action="{% url 'signup' %}" method="post">{% csrf_token %}<label>Apelido<input type="text" name="nickname" placeholder="Como quer ser chamado?" maxlength="30" required></label><label>E-mail<input type="email" name="email" placeholder="seu@email.com" required></label><label>Senha<input type="password" name="password1" placeholder="Mínimo 8 caracteres" minlength="8" required></label><label>Confirmar senha<input type="password" name="password2" placeholder="••••••••" minlength="8" required></label><label class="terms"><input type="checkbox" required> Concordo com os <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a></label><button class="button auth-submit" type="submit">Criar Conta</button></form><div class="or-divider">Ou</div><div class="social-login"><button type="button">Google</button><button type="button">Facebook</button></div><p class="auth-switch">Já tem conta? <button type="button" data-open-modal="login">Entre aqui</button></p></section>
         <section class="recipe-modal" id="recipe-modal" aria-modal="true" role="dialog" aria-labelledby="recipe-modal-title" hidden><button class="modal-close" type="button" aria-label="Fechar">×</button><p class="eyebrow">Receita selecionada</p><h2 id="recipe-modal-title"></h2><p>Abra sua receita favorita para ver ingredientes, modo de preparo e salvar nos seus favoritos.</p><button class="button" type="button" data-open-modal="signup">Criar conta para salvar</button></section>
     </div>
     <script src="{% static 'js/site.js' %}"></script>
