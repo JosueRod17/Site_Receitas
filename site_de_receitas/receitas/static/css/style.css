@@ -413,7 +413,7 @@ h1 {
     font-size: 9px; 
 }
 
-.tag, .rating { 
+.rating {
     position: absolute; 
     top: 8px; 
     padding: 4px 7px; 
@@ -421,10 +421,6 @@ h1 {
     background: rgba(255,255,255,.95); 
     font-size: 8px; 
     font-weight: 700; 
-}
-
-.tag { 
-    left: 8px; 
 }
 
 .rating { 

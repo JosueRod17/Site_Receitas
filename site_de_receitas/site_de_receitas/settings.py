@@ -99,6 +99,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# All protected public pages return to the login modal instead of Django's
+# non-existent default /accounts/login/ endpoint.
+LOGIN_URL = '/?auth=login'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

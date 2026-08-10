@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import management_views, views
 
 urlpatterns = [
     path("", views.listar_membros, name="membros"),
@@ -17,4 +17,29 @@ urlpatterns = [
     path('editar/<int:id>/', views.editar_membro, name='editar_membro'),
     path('deletar/<int:id>/', views.deletar_membro, name='deletar_membro'),
     path('membros/', views.listar_membros, name='listar_membros'),
+    path("gestao/", management_views.dashboard, name="management_dashboard"),
+    path("gestao/receitas/", management_views.recipes, name="management_recipes"),
+    path("gestao/receitas/nova/", management_views.recipe_create, name="management_recipe_create"),
+    path("gestao/receitas/<int:recipe_id>/editar/", management_views.recipe_edit, name="management_recipe_edit"),
+    path("gestao/receitas/<int:recipe_id>/excluir/", management_views.recipe_delete, name="management_recipe_delete"),
+    path("gestao/avaliacoes/", management_views.reviews, name="management_reviews"),
+    path("gestao/avaliacoes/nova/", management_views.review_create, name="management_review_create"),
+    path("gestao/avaliacoes/<int:review_id>/editar/", management_views.review_edit, name="management_review_edit"),
+    path("gestao/avaliacoes/<int:review_id>/excluir/", management_views.review_delete, name="management_review_delete"),
+    path("gestao/favoritos/", management_views.favorites, name="management_favorites"),
+    path("gestao/favoritos/novo/", management_views.favorite_create, name="management_favorite_create"),
+    path("gestao/favoritos/<int:favorite_id>/editar/", management_views.favorite_edit, name="management_favorite_edit"),
+    path("gestao/favoritos/<int:favorite_id>/excluir/", management_views.favorite_delete, name="management_favorite_delete"),
+    path("gestao/membros/", management_views.members, name="management_members"),
+    path("gestao/membros/novo/", management_views.member_create, name="management_member_create"),
+    path("gestao/membros/<int:member_id>/editar/", management_views.member_edit, name="management_member_edit"),
+    path("gestao/membros/<int:member_id>/excluir/", management_views.member_delete, name="management_member_delete"),
+    path("gestao/usuarios/", management_views.users, name="management_users"),
+    path("gestao/usuarios/novo/", management_views.user_create, name="management_user_create"),
+    path("gestao/usuarios/<int:user_id>/editar/", management_views.user_edit, name="management_user_edit"),
+    path("gestao/usuarios/<int:user_id>/excluir/", management_views.user_delete, name="management_user_delete"),
+    path("gestao/grupos/", management_views.groups, name="management_groups"),
+    path("gestao/grupos/novo/", management_views.group_create, name="management_group_create"),
+    path("gestao/grupos/<int:group_id>/editar/", management_views.group_edit, name="management_group_edit"),
+    path("gestao/grupos/<int:group_id>/excluir/", management_views.group_delete, name="management_group_delete"),
 ]

@@ -1,0 +1,91 @@
+{% extends "management/base.html" %}
+
+{% block management_content %}
+<section class="management-page-heading management-dashboard-heading">
+    <div>
+        <p class="management-eyebrow">Resumo do sistema</p>
+        <h1>{{ page_title|default:"Visão geral" }}</h1>
+        <p>Acompanhe o conteúdo, a comunidade e os acessos em um único lugar.</p>
+    </div>
+    <a class="management-button management-button-primary" href="{% url 'management_recipe_create' %}"><span aria-hidden="true">＋</span> Nova receita</a>
+</section>
+
+<section class="management-stat-grid" aria-label="Resumo dos cadastros">
+    {% for stat in stats %}
+        <article class="management-stat-card management-stat-card--{{ forloop.counter }}">
+            <span class="management-stat-icon" aria-hidden="true">0{{ forloop.counter }}</span>
+            <div><span class="management-stat-label">{{ stat.label }}</span><strong>{{ stat.value|default:"0" }}</strong><small>gerenciar no painel</small></div>
+            <a href="{% url stat.url %}" aria-label="Gerenciar {{ stat.label|lower }}">Ver</a>
+        </article>
+    {% empty %}
+        <article class="management-stat-card management-stat-card--1"><span class="management-stat-icon" aria-hidden="true">—</span><div><span class="management-stat-label">Sem dados</span><strong>0</strong><small>Os indicadores aparecerão aqui</small></div></article>
+    {% endfor %}
+</section>
+
+<section class="management-dashboard-grid">
+    <article class="management-panel management-panel--recipes">
+        <header class="management-panel-header">
+            <div>
+                <p class="management-panel-kicker">Conteúdo</p>
+                <h2>Receitas com melhor retorno</h2>
+            </div>
+            <a href="{% url 'management_recipes' %}">Ver todas <span aria-hidden="true">→</span></a>
+        </header>
+        <div class="management-top-recipes">
+            {% for recipe in top_recipes %}
+                <article class="management-top-recipe">
+                    <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}">
+                    <div>
+                        <a href="{% url 'management_recipe_edit' recipe.pk %}">{{ recipe.title }}</a>
+                        <p>{{ recipe.category|default:"Sem categoria" }} · {{ recipe.prep_time }} min</p>
+                    </div>
+                    <div class="management-feedback-summary">
+                        {% if recipe.review_count %}
+                            <strong>{{ recipe.average_rating|floatformat:1 }}/5</strong>
+                            <small>{{ recipe.review_count }} feedback{{ recipe.review_count|pluralize }}</small>
+                        {% else %}
+                            <strong>—</strong>
+                            <small>Sem feedback</small>
+                        {% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <div class="management-empty-state management-empty-state--compact"><span aria-hidden="true">⌑</span><p>Ainda não há receitas cadastradas.</p><a href="{% url 'management_recipe_create' %}">Criar primeira receita</a></div>
+            {% endfor %}
+        </div>
+    </article>
+
+    <article class="management-panel management-panel--reviews">
+        <header class="management-panel-header">
+            <div>
+                <p class="management-panel-kicker">Comunidade</p>
+                <h2>Feedbacks recentes</h2>
+            </div>
+            <a href="{% url 'management_reviews' %}">Ver todos <span aria-hidden="true">→</span></a>
+        </header>
+        <div class="management-latest-reviews">
+            {% for review in latest_reviews %}
+                <article class="management-latest-review">
+                    <span class="management-review-avatar" aria-hidden="true">{{ review.user.username|first|upper }}</span>
+                    <div>
+                        <div class="management-review-line"><strong>{{ review.user.get_full_name|default:review.user.username }}</strong><span>{{ review.rating }}/5</span></div>
+                        <p>em <a href="{% url 'management_recipe_edit' review.recipe.pk %}">{{ review.recipe.title }}</a></p>
+                        {% if review.comment %}<blockquote>“{{ review.comment|truncatechars:105 }}”</blockquote>{% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <div class="management-empty-state management-empty-state--compact"><span aria-hidden="true">◌</span><p>Os feedbacks enviados aparecerão aqui.</p></div>
+            {% endfor %}
+        </div>
+    </article>
+</section>
+
+<section class="management-quick-actions" aria-label="Ações rápidas">
+    <div><p class="management-eyebrow">Atalhos</p><h2>O que você precisa fazer agora?</h2></div>
+    <div class="management-quick-actions-list">
+        <a href="{% url 'management_recipe_create' %}"><span aria-hidden="true">＋</span><strong>Adicionar receita</strong><small>Publique um novo prato</small></a>
+        <a href="{% url 'management_users' %}"><span aria-hidden="true">♧</span><strong>Gerenciar acessos</strong><small>Usuários e permissões</small></a>
+        <a href="{% url 'management_reviews' %}"><span aria-hidden="true">◌</span><strong>Ver feedbacks</strong><small>Acompanhe a comunidade</small></a>
+    </div>
+</section>
+{% endblock %}

@@ -1,22 +1,21 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.db.models import Avg, Count, DecimalField, F, Q
-from django.db.models.functions import Coalesce
+from django.contrib.auth.models import User
+from django.db.models import Avg, Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 
-from .forms import MembrosForm, ProfileForm, SignupForm
+from .access import superuser_required
+from .forms import MembrosForm, ProfileForm, RecipeReviewForm, SignupForm
 from .models import Favorite, Membros, Recipe, Review
 
 
 def recipes_with_average():
     return Recipe.objects.annotate(
-        average_rating=Coalesce(
-            Avg("reviews__rating"),
-            F("rating"),
-            output_field=DecimalField(max_digits=3, decimal_places=1),
-        )
+        average_rating=Avg("reviews__rating"),
+        review_count=Count("reviews"),
     )
 
 
@@ -60,19 +59,30 @@ def signup(request):
 def signin(request):
     if request.method != "POST":
         return redirect("membros")
-    email = request.POST.get("email", "").lower()
-    user = authenticate(request, username=email, password=request.POST.get("password", ""))
+    identifier = request.POST.get("identifier", request.POST.get("email", "")).strip()
+    password = request.POST.get("password", "")
+    user = authenticate(request, username=identifier, password=password)
+    if user is None and identifier:
+        matches = list(
+            User.objects.filter(
+                Q(username__iexact=identifier) | Q(email__iexact=identifier)
+            ).distinct()[:2]
+        )
+        if len(matches) == 1:
+            user = authenticate(request, username=matches[0].username, password=password)
     if user is None:
-        messages.error(request, "E-mail ou senha inválidos.")
+        messages.error(request, "E-mail, usuário ou senha inválidos.")
         return redirect(f"{reverse('membros')}?auth=login")
     else:
         login(request, user)
         messages.success(request, "Login realizado com sucesso.")
-        return redirect("dashboard")
+        return redirect("management_dashboard" if user.is_superuser else "dashboard")
 
 
 @login_required
 def dashboard(request):
+    if request.user.is_superuser:
+        return redirect("management_dashboard")
     recipes, query, category, sort = filtered_recipes(request)
     favorite_ids = set(request.user.favorite_recipes.values_list("recipe_id", flat=True))
     return render(request, "dashboard.html", {
@@ -93,7 +103,14 @@ def toggle_favorite(request, recipe_id):
     favorite, created = Favorite.objects.get_or_create(user=request.user, recipe=recipe)
     if not created:
         favorite.delete()
-    return redirect(request.POST.get("next") or "dashboard")
+    next_url = request.POST.get("next", "")
+    if url_has_allowed_host_and_scheme(
+        next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return redirect(next_url)
+    return redirect("dashboard")
 
 
 def recipe_detail(request, recipe_id):
@@ -115,18 +132,16 @@ def review_recipe(request, recipe_id):
     if request.method != "POST":
         return redirect("recipe_detail", recipe_id=recipe_id)
     recipe = get_object_or_404(Recipe, id=recipe_id)
-    try:
-        rating = int(request.POST.get("rating", ""))
-    except ValueError:
-        rating = 0
-    if not 1 <= rating <= 5:
-        messages.error(request, "Escolha uma nota entre 1 e 5 estrelas.")
+    form = RecipeReviewForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, "Revise a nota e o comentário antes de publicar.")
         return redirect("recipe_detail", recipe_id=recipe.id)
     Review.objects.update_or_create(
         user=request.user,
         recipe=recipe,
-        defaults={"rating": rating, "comment": request.POST.get("comment", "").strip()},
+        defaults={"rating": form.cleaned_data["rating"], "comment": form.cleaned_data["comment"].strip()},
     )
+    messages.success(request, "Avaliação publicada.")
     return redirect("recipe_detail", recipe_id=recipe.id)
 
 
@@ -137,8 +152,11 @@ def profile(request):
         user = form.save()
         update_session_auth_hash(request, user)
         messages.success(request, "Perfil atualizado.")
-        return redirect("dashboard")
-    return render(request, "profile.html", {"form": form})
+        return redirect("management_dashboard" if user.is_superuser else "dashboard")
+    return render(request, "profile.html", {
+        "form": form,
+        "back_url_name": "management_dashboard" if request.user.is_superuser else "dashboard",
+    })
 
 
 @login_required
@@ -147,6 +165,7 @@ def signout(request):
         logout(request)
     return redirect("membros")
 
+@superuser_required
 def criar_membros(request):
     if request.method == "POST":
         form = MembrosForm(request.POST)
@@ -157,6 +176,7 @@ def criar_membros(request):
         form = MembrosForm()
     return render(request, "criar_membros.html", {"form": form})
 
+@superuser_required
 def editar_membro(request, id):
     membro = get_object_or_404(Membros, id=id)
     if request.method == "POST":
@@ -168,6 +188,7 @@ def editar_membro(request, id):
         form = MembrosForm(instance=membro)
     return render(request, "editar_membros.html", {"form": form, "membro": membro})
 
+@superuser_required
 def deletar_membro(request, id):
     membro = get_object_or_404(Membros, id=id)
     if request.method == 'POST':
