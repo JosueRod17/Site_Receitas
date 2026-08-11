@@ -1,41 +1,41 @@
 /* Layout e campos exclusivos da página de perfil. */
-.profile-main {
+.conteudo-perfil {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.profile-main .back-link {
+.conteudo-perfil .link-voltar {
     align-self: stretch;
 }
 
-.profile-panel {
+.painel-perfil {
     margin: 0 auto;
 }
 
-.profile-security-note {
+.aviso-seguranca-perfil {
     margin: -5px 0 0;
     color: #758177;
     font-size: 11px;
     line-height: 1.45;
 }
 
-.profile-current-password,
-.profile-new-passwords {
+.perfil-senha-atual,
+.perfil-novas-senhas {
     display: grid;
     gap: 15px;
 }
 
-.profile-current-password {
+.perfil-senha-atual {
     margin-top: 2px;
 }
 
-.profile-new-passwords {
+.perfil-novas-senhas {
     padding-top: 18px;
     border-top: 1px solid #e2e8e3;
 }
 
-.profile-password-action {
+.acao-senha-perfil {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -47,17 +47,17 @@
     background: #f7fbf8;
 }
 
-.profile-password-action > div { display: grid; gap: 4px; }
+.acao-senha-perfil > div { display: grid; gap: 4px; }
 
-.profile-password-action p { margin: 0; color: #718077; font-size: 11px; line-height: 1.4; }
+.acao-senha-perfil p { margin: 0; color: #718077; font-size: 11px; line-height: 1.4; }
 
-.profile-section-title {
+.titulo-secao-perfil {
     color: #304036;
     font-size: 12px;
     font-weight: 700;
 }
 
-.profile-password-button {
+.botao-alterar-senha-perfil {
     min-height: 34px;
     flex: 0 0 auto;
     padding: 0 12px;
@@ -71,25 +71,25 @@
     cursor: pointer;
 }
 
-.profile-password-button:hover { background: #e4f3e9; }
+.botao-alterar-senha-perfil:hover { background: #e4f3e9; }
 
-.profile-password-button.is-open { background: #278657; color: #fff; }
+.botao-alterar-senha-perfil.esta-aberto { background: #278657; color: #fff; }
 
-.profile-current-password[hidden],
-.profile-new-passwords[hidden] {
+.perfil-senha-atual[hidden],
+.perfil-novas-senhas[hidden] {
     display: none;
 }
 
-.profile-form .form-error {
+.formulario-perfil .erro-formulario {
     margin-top: -8px;
 }
 
 @media (max-width: 520px) {
-    .profile-panel {
+    .painel-perfil {
         padding: 22px;
     }
 
-    .profile-password-action { align-items: flex-start; flex-direction: column; }
+    .acao-senha-perfil { align-items: flex-start; flex-direction: column; }
 
-    .profile-password-button { width: 100%; }
+    .botao-alterar-senha-perfil { width: 100%; }
 }

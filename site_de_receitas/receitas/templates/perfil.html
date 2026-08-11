@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Meu perfil | Sobrevivência na Cozinha</title><link rel="stylesheet" href="{% static 'css/style.css' %}"><link rel="stylesheet" href="{% static 'css/perfil.css' %}"></head>
+<body class="pagina-receitas pagina-perfil">
+    {% if messages %}<div class="mensagens-flutuantes" role="alert">{% for mensagem in messages %}<p class="mensagem-flutuante {{ mensagem.tags }}">{{ mensagem }}</p>{% endfor %}</div>{% endif %}
+    <header class="cabecalho-principal"><div class="linha-cabecalho largura-pagina"><a class="marca" href="{% url nome_rota_voltar %}"><span class="simbolo-marca">S</span><span>Sobrevivência<small>na cozinha</small></span></a><div></div><div class="acoes-conta"><a class="conta-usuario" href="{% url nome_rota_voltar %}"><span class="avatar-usuario">{{ user.first_name|first|upper }}</span>{{ user.first_name }}</a></div></div></header>
+    <main class="conteudo-perfil largura-pagina">
+        <a class="link-voltar" href="{% url nome_rota_voltar %}">‹ Voltar</a>
+        <section class="painel-perfil" aria-labelledby="titulo-perfil">
+            <h1 id="titulo-perfil">Meu perfil</h1>
+            <p>Atualize seu apelido, e-mail cadastrado e, quando precisar, sua senha.</p>
+            <form method="post" class="formulario-perfil" data-alteracao-senha-aberta="{% if formulario.nova_senha.errors or formulario.confirmacao_nova_senha.errors or request.POST.solicitacao_alteracao_senha == '1' %}true{% else %}false{% endif %}" data-senha-atual-visivel="{% if formulario.senha_atual.errors %}true{% else %}false{% endif %}">
+                {% csrf_token %}
+                <input type="hidden" name="solicitacao_alteracao_senha" id="alteracao-senha-solicitada" value="{% if request.POST.solicitacao_alteracao_senha == '1' %}1{% else %}0{% endif %}">
+                {% if formulario.non_field_errors %}<div class="erro-formulario">{{ formulario.non_field_errors }}</div>{% endif %}
+                <label for="{{ formulario.apelido.id_for_label }}">Apelido{{ formulario.apelido }}</label>
+                {% for erro in formulario.apelido.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+                <label for="{{ formulario.email.id_for_label }}">E-mail cadastrado{{ formulario.email }}</label>
+                {% for erro in formulario.email.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+                <p class="aviso-seguranca-perfil">Para trocar o e-mail, confirme sua senha atual.</p>
+                <div class="perfil-senha-atual" id="perfil-senha-atual" hidden>
+                    <label for="{{ formulario.senha_atual.id_for_label }}">Senha atual{{ formulario.senha_atual }}</label>
+                    {% for erro in formulario.senha_atual.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+                </div>
+                <div class="acao-senha-perfil">
+                    <div><p class="titulo-secao-perfil">Quer trocar sua senha?</p><p>Use este botão para liberar os campos de alteração.</p></div>
+                    <button class="botao-alterar-senha-perfil" type="button" id="botao-alterar-senha-perfil" aria-controls="perfil-novas-senhas" aria-expanded="false">Alterar senha</button>
+                </div>
+                <div class="perfil-novas-senhas" id="perfil-novas-senhas" hidden>
+                    <label for="{{ formulario.nova_senha.id_for_label }}">Nova senha{{ formulario.nova_senha }}</label>
+                    {% for erro in formulario.nova_senha.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+                    <label for="{{ formulario.confirmacao_nova_senha.id_for_label }}">Confirmar nova senha{{ formulario.confirmacao_nova_senha }}</label>
+                    {% for erro in formulario.confirmacao_nova_senha.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+                </div>
+                <button class="botao" type="submit">Salvar alterações</button>
+            </form>
+        </section>
+    </main>
+    <script src="{% static 'js/principal.js' %}"></script>
+</body>
+</html>

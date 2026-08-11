@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#245b43">
+    <title>{% block titulo %}{{ titulo_pagina|default:"Painel de gestão" }} | Sobrevivência na Cozinha{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/gestao.css' %}">
+</head>
+<body class="area-gestao">
+    <div class="estrutura-gestao">
+        <aside class="barra-lateral-gestao" aria-label="Navegação do painel">
+            <a class="marca-gestao" href="{% url 'painel_gestao' %}" aria-label="Painel de gestão — início">
+                <span class="simbolo-marca-gestao" aria-hidden="true">S</span>
+                <span>Sobrevivência<small>na cozinha</small></span>
+            </a>
+
+            <div class="rotulo-barra-lateral-gestao">Painel</div>
+            <nav class="navegacao-gestao">
+                <a class="link-navegacao-gestao {% if secao == 'painel' %}esta-ativo{% endif %}" href="{% url 'painel_gestao' %}">
+                    <span class="icone-navegacao-gestao" aria-hidden="true">◫</span><span>Visão geral</span>
+                </a>
+            </nav>
+
+            <div class="rotulo-barra-lateral-gestao">Conteúdo</div>
+            <nav class="navegacao-gestao">
+                <a class="link-navegacao-gestao {% if secao == 'receitas' %}esta-ativo{% endif %}" href="{% url 'gestao_receitas' %}">
+                    <span class="icone-navegacao-gestao" aria-hidden="true">⌑</span><span>Receitas</span>
+                </a>
+                <a class="link-navegacao-gestao {% if secao == 'avaliacoes' %}esta-ativo{% endif %}" href="{% url 'gestao_avaliacoes' %}">
+                    <span class="icone-navegacao-gestao" aria-hidden="true">◌</span><span>Feedbacks</span>
+                </a>
+                <a class="link-navegacao-gestao {% if secao == 'favoritos' %}esta-ativo{% endif %}" href="{% url 'gestao_favoritos' %}">
+                    <span class="icone-navegacao-gestao" aria-hidden="true">♥</span><span>Favoritos</span>
+                </a>
+            </nav>
+
+            <div class="rotulo-barra-lateral-gestao">Pessoas e acesso</div>
+            <nav class="navegacao-gestao">
+                <a class="link-navegacao-gestao {% if secao == 'membros' %}esta-ativo{% endif %}" href="{% url 'gestao_membros' %}">
+                    <span class="icone-navegacao-gestao" aria-hidden="true">♙</span><span>Membros</span>
+                </a>
+                <a class="link-navegacao-gestao {% if secao == 'usuarios' %}esta-ativo{% endif %}" href="{% url 'gestao_usuarios' %}">
+                    <span class="icone-navegacao-gestao" aria-hidden="true">♧</span><span>Usuários</span>
+                </a>
+                <a class="link-navegacao-gestao {% if secao == 'grupos' %}esta-ativo{% endif %}" href="{% url 'gestao_grupos' %}">
+                    <span class="icone-navegacao-gestao" aria-hidden="true">◇</span><span>Grupos</span>
+                </a>
+            </nav>
+
+            <div class="rodape-barra-lateral-gestao">
+                <a class="link-pagina-publica" href="{% url 'inicio' %}">Ver site</a>
+            </div>
+        </aside>
+
+        <div class="area-trabalho-gestao">
+            <header class="barra-superior-gestao">
+                <a class="marca-gestao-movel" href="{% url 'painel_gestao' %}" aria-label="Painel de gestão — início">
+                    <span class="simbolo-marca-gestao" aria-hidden="true">S</span>
+                    <span>Painel</span>
+                </a>
+                <div class="trilha-navegacao-gestao" aria-label="Localização atual">
+                    <span>Painel de gestão</span>
+                    <span aria-hidden="true">/</span>
+                    <strong>{{ titulo_pagina|default:"Visão geral" }}</strong>
+                </div>
+                <div class="conta-gestao">
+                    <a class="link-conta-gestao" href="{% url 'meu_perfil' %}" title="Abrir meu perfil">
+                        <span class="avatar-gestao" aria-hidden="true">{{ user.first_name|first|upper|default:user.username|first|upper }}</span>
+                        <span class="dados-conta-gestao"><strong>{{ user.get_full_name|default:user.username }}</strong><small>{{ user.email|default:"Administrador" }}</small></span>
+                    </a>
+                    <form action="{% url 'sair' %}" method="post">
+                        {% csrf_token %}
+                        <button class="botao-icone-gestao" type="submit" title="Sair" aria-label="Sair">↗</button>
+                    </form>
+                </div>
+            </header>
+
+            {% if messages %}
+                <div class="mensagens-gestao" role="status" aria-live="polite">
+                    {% for mensagem in messages %}
+                        <div class="mensagem-gestao {{ mensagem.tags }}">{{ mensagem }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <main class="conteudo-gestao">
+                {% block conteudo_gestao %}{% endblock %}
+            </main>
+        </div>
+    </div>
+</body>
+</html>

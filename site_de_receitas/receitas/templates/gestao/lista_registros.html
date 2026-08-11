@@ -1,0 +1,158 @@
+{% extends "gestao/base_gestao.html" %}
+
+{% block conteudo_gestao %}
+<section class="cabecalho-pagina-gestao cabecalho-lista-gestao">
+    <div>
+        <p class="sobretitulo-gestao">Gerenciamento</p>
+        <h1>{{ titulo_pagina }}</h1>
+        {% if secao == "receitas" %}
+            <p>Organize as receitas publicadas e acompanhe suas avaliações.</p>
+        {% elif secao == "avaliacoes" %}
+            <p>Modere as avaliações enviadas pela comunidade.</p>
+        {% elif secao == "favoritos" %}
+            <p>Consulte as receitas salvas por cada pessoa.</p>
+        {% elif secao == "membros" %}
+            <p>Mantenha os dados da comunidade atualizados.</p>
+        {% elif secao == "usuarios" %}
+            <p>Controle contas, acesso administrativo e permissões.</p>
+        {% elif secao == "grupos" %}
+            <p>Defina grupos e organize suas permissões de acesso.</p>
+        {% endif %}
+    </div>
+    {% if secao == "receitas" %}
+        <a class="botao-gestao botao-gestao-principal" href="{% url 'criar_receita_gestao' %}"><span aria-hidden="true">＋</span> Nova receita</a>
+    {% elif secao == "avaliacoes" %}
+        <a class="botao-gestao botao-gestao-principal" href="{% url 'criar_avaliacao_gestao' %}"><span aria-hidden="true">＋</span> Nova avaliação</a>
+    {% elif secao == "favoritos" %}
+        <a class="botao-gestao botao-gestao-principal" href="{% url 'criar_favorito_gestao' %}"><span aria-hidden="true">＋</span> Novo favorito</a>
+    {% elif secao == "membros" %}
+        <a class="botao-gestao botao-gestao-principal" href="{% url 'criar_membro_gestao' %}"><span aria-hidden="true">＋</span> Novo membro</a>
+    {% elif secao == "usuarios" %}
+        <a class="botao-gestao botao-gestao-principal" href="{% url 'criar_usuario_gestao' %}"><span aria-hidden="true">＋</span> Novo usuário</a>
+    {% elif secao == "grupos" %}
+        <a class="botao-gestao botao-gestao-principal" href="{% url 'criar_grupo_gestao' %}"><span aria-hidden="true">＋</span> Novo grupo</a>
+    {% endif %}
+</section>
+
+<section class="painel-gestao painel-lista-gestao">
+    <div class="ferramentas-lista-gestao">
+        {% if secao == "receitas" %}
+            <form class="busca-gestao" action="{% url 'gestao_receitas' %}" method="get">
+                <label class="visualmente-oculto-gestao" for="busca-gestao">Buscar receitas</label><input id="busca-gestao" type="search" name="busca" value="{{ busca }}" placeholder="Buscar por título ou categoria"><button type="submit">Buscar</button>
+            </form>
+        {% elif secao == "avaliacoes" %}
+            <form class="busca-gestao" action="{% url 'gestao_avaliacoes' %}" method="get">
+                <label class="visualmente-oculto-gestao" for="busca-gestao">Buscar avaliações</label><input id="busca-gestao" type="search" name="busca" value="{{ busca }}" placeholder="Buscar receita, usuário ou comentário"><button type="submit">Buscar</button>
+            </form>
+        {% elif secao == "favoritos" %}
+            <form class="busca-gestao" action="{% url 'gestao_favoritos' %}" method="get">
+                <label class="visualmente-oculto-gestao" for="busca-gestao">Buscar favoritos</label><input id="busca-gestao" type="search" name="busca" value="{{ busca }}" placeholder="Buscar receita ou usuário"><button type="submit">Buscar</button>
+            </form>
+        {% elif secao == "membros" %}
+            <form class="busca-gestao" action="{% url 'gestao_membros' %}" method="get">
+                <label class="visualmente-oculto-gestao" for="busca-gestao">Buscar membros</label><input id="busca-gestao" type="search" name="busca" value="{{ busca }}" placeholder="Buscar nome ou telefone"><button type="submit">Buscar</button>
+            </form>
+        {% elif secao == "usuarios" %}
+            <form class="busca-gestao" action="{% url 'gestao_usuarios' %}" method="get">
+                <label class="visualmente-oculto-gestao" for="busca-gestao">Buscar usuários</label><input id="busca-gestao" type="search" name="busca" value="{{ busca }}" placeholder="Buscar nome, usuário ou e-mail"><button type="submit">Buscar</button>
+            </form>
+        {% elif secao == "grupos" %}
+            <form class="busca-gestao" action="{% url 'gestao_grupos' %}" method="get">
+                <label class="visualmente-oculto-gestao" for="busca-gestao">Buscar grupos</label><input id="busca-gestao" type="search" name="busca" value="{{ busca }}" placeholder="Buscar grupos"><button type="submit">Buscar</button>
+            </form>
+        {% endif %}
+        <p class="total-resultados-gestao">{{ pagina_objetos.paginator.count }} registro{{ pagina_objetos.paginator.count|pluralize }}{% if busca %} para “{{ busca }}”{% endif %}</p>
+    </div>
+
+    <div class="area-tabela-gestao">
+        <table class="tabela-gestao">
+            {% if secao == "receitas" %}
+                <thead><tr><th scope="col">Receita</th><th scope="col">Categoria</th><th scope="col">Preparo</th><th scope="col">Avaliações</th><th scope="col">Situação</th><th scope="col"><span class="visualmente-oculto-gestao">Ações</span></th></tr></thead>
+                <tbody>
+                    {% for registro in pagina_objetos %}
+                        <tr>
+                            <td data-label="Receita"><div class="receita-tabela-gestao"><img src="{{ registro.url_imagem }}" alt=""><div><strong>{{ registro.titulo }}</strong><small>{{ registro.dificuldade }}</small></div></div></td>
+                            <td data-label="Categoria">{{ registro.categoria|default:"—" }}</td>
+                            <td data-label="Preparo">{{ registro.tempo_preparo }} min</td>
+                            <td data-label="Avaliações">{% if registro.total_avaliacoes %}<strong>{{ registro.media_avaliacoes|floatformat:1 }}/5</strong><small>{{ registro.total_avaliacoes }} avaliação{{ registro.total_avaliacoes|pluralize }}</small>{% else %}<span class="texto-suave-gestao">Sem avaliações</span>{% endif %}</td>
+                            <td data-label="Situação">{% if registro.em_destaque %}<span class="situacao-gestao situacao-gestao--sucesso">Em destaque</span>{% else %}<span class="situacao-gestao">Padrão</span>{% endif %}</td>
+                            <td class="celula-acoes-gestao"><a class="acao-tabela-gestao" href="{% url 'editar_receita_gestao' registro.pk %}">Editar</a><form action="{% url 'excluir_receita_gestao' registro.pk %}" method="post" onsubmit="return confirm('Remover esta receita? Esta ação não poderá ser desfeita.');">{% csrf_token %}<button class="acao-tabela-gestao acao-tabela-gestao--perigo" type="submit">Excluir</button></form></td>
+                        </tr>
+                    {% empty %}<tr><td colspan="6">{% include "gestao/parciais/lista_vazia.html" %}</td></tr>{% endfor %}
+                </tbody>
+            {% elif secao == "avaliacoes" %}
+                <thead><tr><th scope="col">Pessoa</th><th scope="col">Receita</th><th scope="col">Nota</th><th scope="col">Comentário</th><th scope="col">Atualizado</th><th scope="col"><span class="visualmente-oculto-gestao">Ações</span></th></tr></thead>
+                <tbody>
+                    {% for registro in pagina_objetos %}
+                        <tr>
+                            <td data-label="Pessoa"><div class="pessoa-gestao"><span>{{ registro.usuario.username|first|upper }}</span><div><strong>{{ registro.usuario.get_full_name|default:registro.usuario.username }}</strong><small>{{ registro.usuario.email|default:registro.usuario.username }}</small></div></div></td>
+                            <td data-label="Receita"><strong>{{ registro.receita.titulo }}</strong></td>
+                            <td data-label="Nota"><span class="nota-gestao">{{ registro.nota }}/5</span></td>
+                            <td data-label="Comentário"><span class="comentario-gestao">{{ registro.comentario|default:"Sem comentário"|truncatechars:95 }}</span></td>
+                            <td data-label="Atualizado">{{ registro.atualizado_em|date:"d/m/Y" }}</td>
+                            <td class="celula-acoes-gestao"><a class="acao-tabela-gestao" href="{% url 'editar_avaliacao_gestao' registro.pk %}">Editar</a><form action="{% url 'excluir_avaliacao_gestao' registro.pk %}" method="post" onsubmit="return confirm('Remover esta avaliação?');">{% csrf_token %}<button class="acao-tabela-gestao acao-tabela-gestao--perigo" type="submit">Excluir</button></form></td>
+                        </tr>
+                    {% empty %}<tr><td colspan="6">{% include "gestao/parciais/lista_vazia.html" %}</td></tr>{% endfor %}
+                </tbody>
+            {% elif secao == "favoritos" %}
+                <thead><tr><th scope="col">Pessoa</th><th scope="col">Receita favoritada</th><th scope="col">Adicionado em</th><th scope="col"><span class="visualmente-oculto-gestao">Ações</span></th></tr></thead>
+                <tbody>
+                    {% for registro in pagina_objetos %}
+                        <tr>
+                            <td data-label="Pessoa"><div class="pessoa-gestao"><span>{{ registro.usuario.username|first|upper }}</span><div><strong>{{ registro.usuario.get_full_name|default:registro.usuario.username }}</strong><small>{{ registro.usuario.email|default:registro.usuario.username }}</small></div></div></td>
+                            <td data-label="Receita favoritada"><strong>{{ registro.receita.titulo }}</strong><small class="bloco-pequeno-gestao">{{ registro.receita.categoria }}</small></td>
+                            <td data-label="Adicionado em">{{ registro.criado_em|date:"d/m/Y · H:i" }}</td>
+                            <td class="celula-acoes-gestao"><a class="acao-tabela-gestao" href="{% url 'editar_favorito_gestao' registro.pk %}">Editar</a><form action="{% url 'excluir_favorito_gestao' registro.pk %}" method="post" onsubmit="return confirm('Remover este favorito?');">{% csrf_token %}<button class="acao-tabela-gestao acao-tabela-gestao--perigo" type="submit">Excluir</button></form></td>
+                        </tr>
+                    {% empty %}<tr><td colspan="4">{% include "gestao/parciais/lista_vazia.html" %}</td></tr>{% endfor %}
+                </tbody>
+            {% elif secao == "membros" %}
+                <thead><tr><th scope="col">Membro</th><th scope="col">Telefone</th><th scope="col">Data de ingresso</th><th scope="col"><span class="visualmente-oculto-gestao">Ações</span></th></tr></thead>
+                <tbody>
+                    {% for registro in pagina_objetos %}
+                        <tr>
+                            <td data-label="Membro"><div class="pessoa-gestao"><span>{{ registro.primeiro_nome|first|upper }}</span><div><strong>{{ registro.primeiro_nome }} {{ registro.sobrenome }}</strong><small>Cadastro da comunidade</small></div></div></td>
+                            <td data-label="Telefone">{{ registro.telefone|default:"—" }}</td>
+                            <td data-label="Data de ingresso">{{ registro.data_ingresso|date:"d/m/Y"|default:"—" }}</td>
+                            <td class="celula-acoes-gestao"><a class="acao-tabela-gestao" href="{% url 'editar_membro_gestao' registro.pk %}">Editar</a><form action="{% url 'excluir_membro_gestao' registro.pk %}" method="post" onsubmit="return confirm('Remover este membro?');">{% csrf_token %}<button class="acao-tabela-gestao acao-tabela-gestao--perigo" type="submit">Excluir</button></form></td>
+                        </tr>
+                    {% empty %}<tr><td colspan="4">{% include "gestao/parciais/lista_vazia.html" %}</td></tr>{% endfor %}
+                </tbody>
+            {% elif secao == "usuarios" %}
+                <thead><tr><th scope="col">Usuário</th><th scope="col">E-mail</th><th scope="col">Grupos</th><th scope="col">Acesso</th><th scope="col"><span class="visualmente-oculto-gestao">Ações</span></th></tr></thead>
+                <tbody>
+                    {% for registro in pagina_objetos %}
+                        <tr>
+                            <td data-label="Usuário"><div class="pessoa-gestao"><span>{{ registro.username|first|upper }}</span><div><strong>{{ registro.get_full_name|default:registro.username }}</strong><small>@{{ registro.username }}</small></div></div></td>
+                            <td data-label="E-mail">{{ registro.email|default:"Não informado" }}</td>
+                            <td data-label="Grupos"><div class="etiquetas-gestao">{% for grupo in registro.groups.all %}<span>{{ grupo.name }}</span>{% empty %}<span class="texto-suave-gestao">Sem grupo</span>{% endfor %}</div></td>
+                            <td data-label="Acesso"><div class="lista-situacoes-gestao">{% if registro.is_superuser %}<span class="situacao-gestao situacao-gestao--destaque">Superusuário</span>{% elif registro.is_staff %}<span class="situacao-gestao situacao-gestao--informacao">Equipe</span>{% endif %}{% if registro.is_active %}<span class="situacao-gestao situacao-gestao--sucesso">Ativo</span>{% else %}<span class="situacao-gestao situacao-gestao--perigo">Inativo</span>{% endif %}</div></td>
+                            <td class="celula-acoes-gestao"><a class="acao-tabela-gestao" href="{% url 'editar_usuario_gestao' registro.pk %}">Editar</a>{% if registro.pk != user.pk %}<form action="{% url 'excluir_usuario_gestao' registro.pk %}" method="post" onsubmit="return confirm('Remover este usuário?');">{% csrf_token %}<button class="acao-tabela-gestao acao-tabela-gestao--perigo" type="submit">Excluir</button></form>{% endif %}</td>
+                        </tr>
+                    {% empty %}<tr><td colspan="5">{% include "gestao/parciais/lista_vazia.html" %}</td></tr>{% endfor %}
+                </tbody>
+            {% elif secao == "grupos" %}
+                <thead><tr><th scope="col">Grupo</th><th scope="col">Membros</th><th scope="col">Permissões</th><th scope="col"><span class="visualmente-oculto-gestao">Ações</span></th></tr></thead>
+                <tbody>
+                    {% for registro in pagina_objetos %}
+                        <tr>
+                            <td data-label="Grupo"><div class="nome-grupo-gestao"><span aria-hidden="true">◇</span><strong>{{ registro.name }}</strong></div></td>
+                            <td data-label="Membros">{{ registro.total_membros }} usuário{{ registro.total_membros|pluralize }}</td>
+                            <td data-label="Permissões">{{ registro.total_permissoes }} permissão{{ registro.total_permissoes|pluralize }}</td>
+                            <td class="celula-acoes-gestao"><a class="acao-tabela-gestao" href="{% url 'editar_grupo_gestao' registro.pk %}">Editar</a><form action="{% url 'excluir_grupo_gestao' registro.pk %}" method="post" onsubmit="return confirm('Remover este grupo?');">{% csrf_token %}<button class="acao-tabela-gestao acao-tabela-gestao--perigo" type="submit">Excluir</button></form></td>
+                        </tr>
+                    {% empty %}<tr><td colspan="4">{% include "gestao/parciais/lista_vazia.html" %}</td></tr>{% endfor %}
+                </tbody>
+            {% endif %}
+        </table>
+    </div>
+
+    {% if pagina_objetos.has_other_pages %}
+        <nav class="paginacao-gestao" aria-label="Paginação">
+            {% if pagina_objetos.has_previous %}<a href="?{% if busca %}busca={{ busca|urlencode }}&amp;{% endif %}pagina={{ pagina_objetos.previous_page_number }}" aria-label="Página anterior">← Anterior</a>{% else %}<span class="esta-desativado">← Anterior</span>{% endif %}
+            <span>Página <strong>{{ pagina_objetos.number }}</strong> de {{ pagina_objetos.paginator.num_pages }}</span>
+            {% if pagina_objetos.has_next %}<a href="?{% if busca %}busca={{ busca|urlencode }}&amp;{% endif %}pagina={{ pagina_objetos.next_page_number }}" aria-label="Próxima página">Próxima →</a>{% else %}<span class="esta-desativado">Próxima →</span>{% endif %}
+        </nav>
+    {% endif %}
+</section>
+{% endblock %}

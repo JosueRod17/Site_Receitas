@@ -1,0 +1,91 @@
+{% extends "gestao/base_gestao.html" %}
+
+{% block conteudo_gestao %}
+<section class="cabecalho-pagina-gestao cabecalho-painel-gestao">
+    <div>
+        <p class="sobretitulo-gestao">Resumo do sistema</p>
+        <h1>{{ titulo_pagina|default:"Visão geral" }}</h1>
+        <p>Acompanhe o conteúdo, a comunidade e os acessos em um único lugar.</p>
+    </div>
+    <a class="botao-gestao botao-gestao-principal" href="{% url 'criar_receita_gestao' %}"><span aria-hidden="true">＋</span> Nova receita</a>
+</section>
+
+<section class="grade-indicadores-gestao" aria-label="Resumo dos cadastros">
+    {% for estatistica in estatisticas %}
+        <article class="cartao-indicador-gestao cartao-indicador-gestao--{{ forloop.counter }}">
+            <span class="icone-indicador-gestao" aria-hidden="true">0{{ forloop.counter }}</span>
+            <div><span class="rotulo-indicador-gestao">{{ estatistica.rotulo }}</span><strong>{{ estatistica.valor|default:"0" }}</strong><small>gerenciar no painel</small></div>
+            <a href="{% url estatistica.rota %}" aria-label="Gerenciar {{ estatistica.rotulo|lower }}">Ver</a>
+        </article>
+    {% empty %}
+        <article class="cartao-indicador-gestao cartao-indicador-gestao--1"><span class="icone-indicador-gestao" aria-hidden="true">—</span><div><span class="rotulo-indicador-gestao">Sem dados</span><strong>0</strong><small>Os indicadores aparecerão aqui</small></div></article>
+    {% endfor %}
+</section>
+
+<section class="grade-painel-gestao">
+    <article class="painel-gestao painel-gestao--receitas">
+        <header class="cabecalho-painel-gestao">
+            <div>
+                <p class="rotulo-painel-gestao">Conteúdo</p>
+                <h2>Receitas com melhor retorno</h2>
+            </div>
+            <a href="{% url 'gestao_receitas' %}">Ver todas <span aria-hidden="true">→</span></a>
+        </header>
+        <div class="receitas-destaque-gestao">
+            {% for receita in receitas_em_destaque %}
+                <article class="receita-destaque-gestao">
+                    <img src="{{ receita.url_imagem }}" alt="{{ receita.titulo }}">
+                    <div>
+                        <a href="{% url 'editar_receita_gestao' receita.pk %}">{{ receita.titulo }}</a>
+                        <p>{{ receita.categoria|default:"Sem categoria" }} · {{ receita.tempo_preparo }} min</p>
+                    </div>
+                    <div class="resumo-avaliacoes-gestao">
+                        {% if receita.total_avaliacoes %}
+                            <strong>{{ receita.media_avaliacoes|floatformat:1 }}/5</strong>
+                            <small>{{ receita.total_avaliacoes }} avaliação{{ receita.total_avaliacoes|pluralize }}</small>
+                        {% else %}
+                            <strong>—</strong>
+                            <small>Sem avaliações</small>
+                        {% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <div class="estado-vazio-gestao estado-vazio-gestao--compacto"><span aria-hidden="true">⌑</span><p>Ainda não há receitas cadastradas.</p><a href="{% url 'criar_receita_gestao' %}">Criar primeira receita</a></div>
+            {% endfor %}
+        </div>
+    </article>
+
+    <article class="painel-gestao painel-gestao--avaliacoes">
+        <header class="cabecalho-painel-gestao">
+            <div>
+                <p class="rotulo-painel-gestao">Comunidade</p>
+                <h2>Avaliações recentes</h2>
+            </div>
+            <a href="{% url 'gestao_avaliacoes' %}">Ver todos <span aria-hidden="true">→</span></a>
+        </header>
+        <div class="ultimas-avaliacoes-gestao">
+            {% for avaliacao in avaliacoes_recentes %}
+                <article class="ultima-avaliacao-gestao">
+                    <span class="avatar-avaliacao-gestao" aria-hidden="true">{{ avaliacao.usuario.username|first|upper }}</span>
+                    <div>
+                        <div class="linha-avaliacao-gestao"><strong>{{ avaliacao.usuario.get_full_name|default:avaliacao.usuario.username }}</strong><span>{{ avaliacao.nota }}/5</span></div>
+                        <p>em <a href="{% url 'editar_receita_gestao' avaliacao.receita.pk %}">{{ avaliacao.receita.titulo }}</a></p>
+                        {% if avaliacao.comentario %}<blockquote>“{{ avaliacao.comentario|truncatechars:105 }}”</blockquote>{% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <div class="estado-vazio-gestao estado-vazio-gestao--compacto"><span aria-hidden="true">◌</span><p>As avaliações enviadas aparecerão aqui.</p></div>
+            {% endfor %}
+        </div>
+    </article>
+</section>
+
+<section class="acoes-rapidas-gestao" aria-label="Ações rápidas">
+    <div><p class="sobretitulo-gestao">Atalhos</p><h2>O que você precisa fazer agora?</h2></div>
+    <div class="lista-acoes-rapidas-gestao">
+        <a href="{% url 'criar_receita_gestao' %}"><span aria-hidden="true">＋</span><strong>Adicionar receita</strong><small>Publique um novo prato</small></a>
+        <a href="{% url 'gestao_usuarios' %}"><span aria-hidden="true">♧</span><strong>Gerenciar acessos</strong><small>Usuários e permissões</small></a>
+        <a href="{% url 'gestao_avaliacoes' %}"><span aria-hidden="true">◌</span><strong>Ver avaliações</strong><small>Acompanhe a comunidade</small></a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "gestao/base_gestao.html" %}
+
+{% block conteudo_gestao %}
+<section class="cabecalho-formulario-gestao">
+    <a class="link-voltar-gestao" href="{% url nome_rota_cancelar %}"><span aria-hidden="true">←</span> Voltar para a lista</a>
+    <p class="sobretitulo-gestao">Gerenciamento</p>
+    <h1>{{ titulo_pagina }}</h1>
+    {% if formulario.instance.pk %}
+        <p>Atualize os dados abaixo e salve quando terminar.</p>
+    {% else %}
+        <p>Preencha os dados para criar um novo registro.</p>
+    {% endif %}
+</section>
+
+<div class="estrutura-formulario-gestao">
+    <form class="painel-gestao formulario-registro-gestao" method="post" novalidate>
+        {% csrf_token %}
+
+        {% if formulario.non_field_errors %}
+            <div class="erros-formulario-gestao" role="alert">{{ formulario.non_field_errors }}</div>
+        {% endif %}
+
+        {% for campo_oculto in formulario.hidden_fields %}
+            {{ campo_oculto }}
+            {% if campo_oculto.errors %}<div class="erro-campo-gestao">{{ campo_oculto.errors }}</div>{% endif %}
+        {% endfor %}
+
+        <div class="campos-gestao">
+            {% for campo in formulario.visible_fields %}
+                {% if campo.name == "em_destaque" or campo.name == "is_active" or campo.name == "is_staff" or campo.name == "is_superuser" %}
+                    <div class="campo-gestao campo-gestao--caixa-marcacao{% if campo.errors %} tem-erro{% endif %}">
+                        <label for="{{ campo.id_for_label }}">{{ campo }}<span><strong>{{ campo.label }}</strong>{% if campo.help_text %}<small>{{ campo.help_text }}</small>{% endif %}</span></label>
+                        {% if campo.errors %}<div class="erro-campo-gestao">{{ campo.errors }}</div>{% endif %}
+                    </div>
+                {% else %}
+                    <div class="campo-gestao{% if campo.name == 'descricao' %} campo-gestao--descricao{% elif campo.name == 'ingredientes' %} campo-gestao--ingredientes{% elif campo.name == 'modo_preparo' %} campo-gestao--preparo{% elif campo.name == 'groups' %} campo-gestao--grupos{% elif campo.name == 'user_permissions' %} campo-gestao--permissoes-usuario{% elif campo.name == 'comentario' %} campo-gestao--comentario{% endif %}{% if campo.errors %} tem-erro{% endif %}">
+                        <label for="{{ campo.id_for_label }}">{{ campo.label }}{% if campo.field.required %}<span class="obrigatorio-gestao" aria-hidden="true">*</span>{% endif %}</label>
+                        {{ campo }}
+                        {% if campo.help_text %}<small class="ajuda-campo-gestao">{{ campo.help_text }}</small>{% endif %}
+                        {% if campo.errors %}<div class="erro-campo-gestao">{{ campo.errors }}</div>{% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <footer class="rodape-formulario-gestao">
+            <a class="botao-gestao botao-gestao-secundario" href="{% url nome_rota_cancelar %}">Cancelar</a>
+            <button class="botao-gestao botao-gestao-principal" type="submit">{% if formulario.instance.pk %}Salvar alterações{% else %}Criar registro{% endif %}</button>
+        </footer>
+    </form>
+
+    <aside class="lateral-formulario-gestao">
+        {% if secao == "receitas" %}
+            <span class="icone-lateral-gestao" aria-hidden="true">⌑</span>
+            <h2>Uma boa receita começa com clareza.</h2>
+            <p>Inclua uma imagem, ingredientes organizados e um modo de preparo fácil de seguir.</p>
+            <ul><li>A avaliação é calculada pelas avaliações reais.</li><li>Use uma linha para cada ingrediente ou passo.</li><li>Marque destaque para dar mais visibilidade.</li></ul>
+        {% elif secao == "avaliacoes" %}
+            <span class="icone-lateral-gestao" aria-hidden="true">◌</span>
+            <h2>Avaliações são a voz da comunidade.</h2>
+            <p>Escolha a receita e a pessoa corretas. Cada pessoa pode avaliar uma receita uma única vez.</p>
+        {% elif secao == "favoritos" %}
+            <span class="icone-lateral-gestao" aria-hidden="true">♥</span>
+            <h2>Receitas salvas</h2>
+            <p>Associe uma pessoa a uma receita que ela deseja guardar para preparar depois.</p>
+        {% elif secao == "membros" %}
+            <span class="icone-lateral-gestao" aria-hidden="true">♙</span>
+            <h2>Dados da comunidade</h2>
+            <p>Mantenha o cadastro de membros simples, atualizado e fácil de localizar.</p>
+        {% elif secao == "usuarios" %}
+            <span class="icone-lateral-gestao" aria-hidden="true">♧</span>
+            <h2>Controle de acesso</h2>
+            <p>Conceda permissões apenas quando necessário. Uma nova conta precisa de senha para poder entrar.</p>
+        {% elif secao == "grupos" %}
+            <span class="icone-lateral-gestao" aria-hidden="true">◇</span>
+            <h2>Permissões organizadas</h2>
+            <p>Use grupos para aplicar um conjunto de permissões a várias contas de uma só vez.</p>
+        {% endif %}
+    </aside>
+</div>
+{% endblock %}

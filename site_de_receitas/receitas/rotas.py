@@ -1,0 +1,149 @@
+from django.urls import path as caminho
+
+from . import visoes, visoes_gestao
+
+
+urlpatterns = [
+    caminho("", visoes.inicio, name="inicio"),
+    caminho("entrar/", visoes.entrar, name="entrar"),
+    caminho("criar-conta/", visoes.criar_conta, name="criar_conta"),
+    caminho("minhas-receitas/", visoes.minhas_receitas, name="minhas_receitas"),
+    caminho(
+        "receitas/<int:id_receita>/",
+        visoes.detalhe_receita,
+        name="detalhe_receita",
+    ),
+    caminho(
+        "receitas/<int:id_receita>/favoritar/",
+        visoes.alternar_favorito,
+        name="alternar_favorito",
+    ),
+    caminho(
+        "receitas/<int:id_receita>/avaliar/",
+        visoes.avaliar_receita,
+        name="avaliar_receita",
+    ),
+    caminho("perfil/", visoes.meu_perfil, name="meu_perfil"),
+    caminho("sair/", visoes.sair, name="sair"),
+    caminho("gestao/", visoes_gestao.painel_gestao, name="painel_gestao"),
+    caminho(
+        "gestao/receitas/",
+        visoes_gestao.listar_receitas_gestao,
+        name="gestao_receitas",
+    ),
+    caminho(
+        "gestao/receitas/nova/",
+        visoes_gestao.criar_receita_gestao,
+        name="criar_receita_gestao",
+    ),
+    caminho(
+        "gestao/receitas/<int:id_receita>/editar/",
+        visoes_gestao.editar_receita_gestao,
+        name="editar_receita_gestao",
+    ),
+    caminho(
+        "gestao/receitas/<int:id_receita>/excluir/",
+        visoes_gestao.excluir_receita_gestao,
+        name="excluir_receita_gestao",
+    ),
+    caminho(
+        "gestao/avaliacoes/",
+        visoes_gestao.listar_avaliacoes_gestao,
+        name="gestao_avaliacoes",
+    ),
+    caminho(
+        "gestao/avaliacoes/nova/",
+        visoes_gestao.criar_avaliacao_gestao,
+        name="criar_avaliacao_gestao",
+    ),
+    caminho(
+        "gestao/avaliacoes/<int:id_avaliacao>/editar/",
+        visoes_gestao.editar_avaliacao_gestao,
+        name="editar_avaliacao_gestao",
+    ),
+    caminho(
+        "gestao/avaliacoes/<int:id_avaliacao>/excluir/",
+        visoes_gestao.excluir_avaliacao_gestao,
+        name="excluir_avaliacao_gestao",
+    ),
+    caminho(
+        "gestao/favoritos/",
+        visoes_gestao.listar_favoritos_gestao,
+        name="gestao_favoritos",
+    ),
+    caminho(
+        "gestao/favoritos/novo/",
+        visoes_gestao.criar_favorito_gestao,
+        name="criar_favorito_gestao",
+    ),
+    caminho(
+        "gestao/favoritos/<int:id_favorito>/editar/",
+        visoes_gestao.editar_favorito_gestao,
+        name="editar_favorito_gestao",
+    ),
+    caminho(
+        "gestao/favoritos/<int:id_favorito>/excluir/",
+        visoes_gestao.excluir_favorito_gestao,
+        name="excluir_favorito_gestao",
+    ),
+    caminho(
+        "gestao/membros/",
+        visoes_gestao.listar_membros_gestao,
+        name="gestao_membros",
+    ),
+    caminho(
+        "gestao/membros/novo/",
+        visoes_gestao.criar_membro_gestao,
+        name="criar_membro_gestao",
+    ),
+    caminho(
+        "gestao/membros/<int:id_membro>/editar/",
+        visoes_gestao.editar_membro_gestao,
+        name="editar_membro_gestao",
+    ),
+    caminho(
+        "gestao/membros/<int:id_membro>/excluir/",
+        visoes_gestao.excluir_membro_gestao,
+        name="excluir_membro_gestao",
+    ),
+    caminho(
+        "gestao/usuarios/",
+        visoes_gestao.listar_usuarios_gestao,
+        name="gestao_usuarios",
+    ),
+    caminho(
+        "gestao/usuarios/novo/",
+        visoes_gestao.criar_usuario_gestao,
+        name="criar_usuario_gestao",
+    ),
+    caminho(
+        "gestao/usuarios/<int:id_usuario>/editar/",
+        visoes_gestao.editar_usuario_gestao,
+        name="editar_usuario_gestao",
+    ),
+    caminho(
+        "gestao/usuarios/<int:id_usuario>/excluir/",
+        visoes_gestao.excluir_usuario_gestao,
+        name="excluir_usuario_gestao",
+    ),
+    caminho(
+        "gestao/grupos/",
+        visoes_gestao.listar_grupos_gestao,
+        name="gestao_grupos",
+    ),
+    caminho(
+        "gestao/grupos/novo/",
+        visoes_gestao.criar_grupo_gestao,
+        name="criar_grupo_gestao",
+    ),
+    caminho(
+        "gestao/grupos/<int:id_grupo>/editar/",
+        visoes_gestao.editar_grupo_gestao,
+        name="editar_grupo_gestao",
+    ),
+    caminho(
+        "gestao/grupos/<int:id_grupo>/excluir/",
+        visoes_gestao.excluir_grupo_gestao,
+        name="excluir_grupo_gestao",
+    ),
+]

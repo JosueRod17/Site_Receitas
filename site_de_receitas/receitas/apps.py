@@ -1,5 +1,7 @@
-from django.apps import AppConfig
+"""Configuração do aplicativo de receitas."""
+
+from django.apps import AppConfig as ConfiguracaoAplicativo
 
 
-class ReceitasConfig(AppConfig):
-    name = 'receitas'
+class ConfiguracaoReceitas(ConfiguracaoAplicativo):
+    name = "receitas"

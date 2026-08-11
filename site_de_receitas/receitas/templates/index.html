@@ -4,82 +4,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sobrevivencia na Cozinha</title>
+    <title>Sobrevivência na Cozinha</title>
     <link rel="preconnect" href="https://images.unsplash.com">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body class="recipe-home">
-    {% if messages %}<div class="flash-messages" role="alert">{% for message in messages %}<p class="flash-message {{ message.tags }}">{{ message }}</p>{% endfor %}</div>{% endif %}
-    <header class="site-header">
-        <div class="header-row page-width">
-            <a class="brand" href="{% url 'membros' %}" aria-label="Sobrevivencia na Cozinha, inicio">
-                <span class="brand-mark">S</span>
-                <span>Sobrevivencia<small>na cozinha</small></span>
+<body class="pagina-receitas">
+    {% if messages %}<div class="mensagens-flutuantes" role="alert">{% for mensagem in messages %}<p class="mensagem-flutuante {{ mensagem.tags }}">{{ mensagem }}</p>{% endfor %}</div>{% endif %}
+    <header class="cabecalho-principal">
+        <div class="linha-cabecalho largura-pagina">
+            <a class="marca" href="{% url 'inicio' %}" aria-label="Sobrevivência na Cozinha, inicio">
+                <span class="simbolo-marca">S</span>
+                <span>Sobrevivência<small>na cozinha</small></span>
             </a>
-            <form class="search-box" method="get" action="{% url 'membros' %}">
+            <form class="caixa-busca" method="get" action="{% url 'inicio' %}">
                 <span aria-hidden="true">⌕</span>
-                <input type="search" name="q" value="{{ query }}" placeholder="Buscar receitas, ingredientes..." aria-label="Buscar receitas">
+                <input type="search" name="busca" value="{{ busca }}" placeholder="Buscar receitas, ingredientes..." aria-label="Buscar receitas">
             </form>
-            <div class="account-actions">
+            <div class="acoes-conta">
                 {% if user.is_authenticated %}
-                <a class="user-account" href="{% url 'profile' %}"><span class="user-avatar">{{ user.first_name|first|upper }}</span>{{ user.first_name|default:user.email }}</a>
-                <form action="{% url 'signout' %}" method="post">{% csrf_token %}<button class="button button-outline" type="submit">Sair</button></form>
+                <a class="conta-usuario" href="{% url 'meu_perfil' %}"><span class="avatar-usuario">{{ user.first_name|first|upper }}</span>{{ user.first_name|default:user.email }}</a>
+                <form action="{% url 'sair' %}" method="post">{% csrf_token %}<button class="botao botao-contorno" type="submit">Sair</button></form>
                 {% else %}
-                <button class="button button-outline" type="button" data-open-modal="login">Entrar</button>
-                <button class="button" type="button" data-open-modal="signup">Criar conta</button>
+                <button class="botao botao-contorno" type="button" data-abrir-modal="entrar">Entrar</button>
+                <button class="botao" type="button" data-abrir-modal="cadastro">Criar conta</button>
                 {% endif %}
             </div>
         </div>
-        <nav class="category-nav page-width" aria-label="Categorias principais">
-            {% for category in categories %}<a class="{% if active_category == category.category %}active{% endif %}" href="?category={{ category.category|urlencode }}#receitas">{{ category.category }}</a>{% endfor %}<a class="all-categories" href="{% url 'membros' %}#receitas">Todas as categorias ›</a>
+        <nav class="navegacao-categorias largura-pagina" aria-label="Categorias principais">
+            {% for categoria in categorias %}<a class="{% if categoria_ativa == categoria.categoria %}ativo{% endif %}" href="?categoria={{ categoria.categoria|urlencode }}#receitas">{{ categoria.categoria }}</a>{% endfor %}<a class="todas-categorias" href="{% url 'inicio' %}#receitas">Todas as categorias ›</a>
         </nav>
     </header>
 
     <main>
-        <section class="hero page-width">
-            <div class="hero-copy">
-                <span class="eyebrow">✦ Receitas para quem não sabe cozinhar</span>
+        <section class="destaque-principal largura-pagina">
+            <div class="texto-destaque">
+                <span class="sobretitulo">✦ Receitas para quem não sabe cozinhar</span>
                 <h1>Cozinhar é mais fácil<br>do que você pensa.</h1>
                 <p>Receitas simples, rápidas e deliciosas para quem está começando ou tem pouco tempo. Sem complicação.</p>
-                <div class="hero-actions"><a class="button button-large" href="#receitas">Explorar receitas</a><a class="text-link" href="#categorias">Como funciona ›</a></div>
-                <dl class="stats"><div><dt>Mais de 500</dt><dd>Receitas</dd></div><div><dt>Mais de 20 mil</dt><dd>Inscritos</dd></div><div><dt>4,9</dt><dd>Avaliação</dd></div></dl>
+                <div class="acoes-destaque"><a class="botao botao-grande" href="#receitas">Explorar receitas</a><a class="link-texto" href="#categorias">Como funciona ›</a></div>
+                <dl class="estatisticas"><div><dt>Mais de 500</dt><dd>Receitas</dd></div><div><dt>Mais de 20 mil</dt><dd>Inscritos</dd></div><div><dt>4,9</dt><dd>Avaliação</dd></div></dl>
             </div>
-            <div class="food-mosaic" aria-label="Seleção de pratos apetitosos">
-                <img class="pasta" src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=620&q=80" alt="Massa ao molho de tomate">
-                <img class="cake" src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80" alt="Fatia de bolo de chocolate">
-                <img class="salad" src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=500&q=80" alt="Salada colorida">
-                <img class="chicken" src="https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=620&q=80" alt="Frango assado com legumes">
-            </div>
-        </section>
-
-        <section class="catalog page-width" id="categorias">
-            <div class="section-heading"><div><h2>Explore por Categoria</h2><p>Encontre uma receita certa para cada momento do dia</p></div><a class="text-link" href="#receitas">Ver todas ›</a></div>
-            <div class="category-grid">
-                {% for category in categories %}<a class="category-card {% if forloop.counter0|divisibleby:3 %}mint{% endif %}" href="?category={{ category.category|urlencode }}#receitas"><span>⌁</span><strong>{{ category.category }}</strong><small>{{ category.total }} receita{{ category.total|pluralize }}</small></a>{% empty %}<p class="empty-results">Cadastre a primeira receita no admin para criar categorias.</p>{% endfor %}
+            <div class="mosaico-pratos" aria-label="Seleção de pratos apetitosos">
+                <img class="massa" src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=620&q=80" alt="Massa ao molho de tomate">
+                <img class="bolo" src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80" alt="Fatia de bolo de chocolate">
+                <img class="salada" src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=500&q=80" alt="Salada colorida">
+                <img class="frango" src="https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=620&q=80" alt="Frango assado com legumes">
             </div>
         </section>
 
-        <section class="recipes-section page-width" id="receitas">
-            <div class="section-heading recipes-heading"><div><h2>Receitas em alta</h2><p>As mais salvas e avaliadas da semana</p></div><div class="filter-tabs"><button class="selected" type="button">Mais recentes</button><button type="button">Mais fáceis</button><button type="button">Melhores avaliadas</button></div></div>
-            <div class="recipe-grid">
-                {% for recipe in recipes %}
-                <article class="recipe-card"><a class="recipe-link" href="{% url 'recipe_detail' recipe.id %}"><img src="{{ recipe.image_url }}" alt="{{ recipe.title }}"><span class="rating">{{ recipe.category }}</span><div><h3>{{ recipe.title }}</h3><p>◷ {{ recipe.prep_time }} minutos &nbsp; · &nbsp; {{ recipe.difficulty }}</p>{% if recipe.review_count %}<p>{{ recipe.average_rating|floatformat:1 }}/5 · {{ recipe.review_count }} {% if recipe.review_count == 1 %}avaliação{% else %}avaliações{% endif %}</p>{% else %}<p>Sem avaliações</p>{% endif %}</div></a></article>
+        <section class="catalogo largura-pagina" id="categorias">
+            <div class="cabecalho-secao"><div><h2>Explore por Categoria</h2><p>Encontre uma receita certa para cada momento do dia</p></div><a class="link-texto" href="#receitas">Ver todas ›</a></div>
+            <div class="grade-categorias">
+                {% for categoria in categorias %}<a class="cartao-categoria {% if forloop.counter0|divisibleby:3 %}menta{% endif %}" href="?categoria={{ categoria.categoria|urlencode }}#receitas"><span>⌁</span><strong>{{ categoria.categoria }}</strong><small>{{ categoria.total }} receita{{ categoria.total|pluralize }}</small></a>{% empty %}<p class="resultado-vazio">Cadastre a primeira receita na área de gestão para criar categorias.</p>{% endfor %}
+            </div>
+        </section>
+
+        <section class="secao-receitas largura-pagina" id="receitas">
+            <div class="cabecalho-secao cabecalho-receitas"><div><h2>Receitas em alta</h2><p>As mais salvas e avaliadas da semana</p></div><div class="abas-filtro"><button class="selecionado" type="button">Mais recentes</button><button type="button">Mais fáceis</button><button type="button">Melhores avaliadas</button></div></div>
+            <div class="grade-receitas">
+                {% for receita in receitas %}
+                <article class="cartao-receita"><a class="link-receita" href="{% url 'detalhe_receita' receita.id %}"><img src="{{ receita.url_imagem }}" alt="{{ receita.titulo }}"><span class="etiqueta-categoria">{{ receita.categoria }}</span><div><h3>{{ receita.titulo }}</h3><p>◷ {{ receita.tempo_preparo }} minutos &nbsp; · &nbsp; {{ receita.dificuldade }}</p>{% if receita.total_avaliacoes %}<p>{{ receita.media_avaliacoes|floatformat:1 }}/5 · {{ receita.total_avaliacoes }} {% if receita.total_avaliacoes == 1 %}avaliação{% else %}avaliações{% endif %}</p>{% else %}<p>Sem avaliações</p>{% endif %}</div></a></article>
                 {% empty %}
-                <p class="empty-results">Nenhuma receita encontrada. Cadastre receitas no admin ou tente outra busca.</p>
+                <p class="resultado-vazio">Nenhuma receita encontrada. Cadastre receitas na área de gestão ou tente outra busca.</p>
                 {% endfor %}
             </div>
-            <div class="load-more"><button class="button button-outline" type="button" id="load-more">Carregar mais receitas</button></div>
+            <div class="carregar-mais"><button class="botao botao-contorno" type="button" id="carregar-mais">Carregar mais receitas</button></div>
         </section>
 
-        <section class="newsletter"><div class="newsletter-inner page-width"><div><h2>Receita nova toda semana no seu<br>e-mail</h2><p>Mais de 20.000 cozinheiros já recebem. Cancele quando quiser.</p></div><form id="newsletter-form"><label class="sr-only" for="newsletter-email">Seu e-mail</label><input id="newsletter-email" type="email" placeholder="seu@email.com" required><button class="button button-dark" type="submit">Quero receber</button></form></div></section>
+        <section class="novidades"><div class="conteudo-novidades largura-pagina"><div><h2>Receita nova toda semana no seu<br>e-mail</h2><p>Mais de 20.000 cozinheiros já recebem. Cancele quando quiser.</p></div><form id="formulario-novidades"><label class="visualmente-oculto" for="email-novidades">Seu e-mail</label><input id="email-novidades" type="email" placeholder="seu@email.com" required><button class="botao botao-escuro" type="submit">Quero receber</button></form></div></section>
     </main>
-    <footer class="site-footer"><div class="page-width footer-grid"><div><a class="brand" href="#top"><span class="brand-mark">S</span><span>Sobrevivência na Cozinha</span></a><p>Receitas simples para todos os níveis.<br>Porque todo mundo merece cozinhar bem.</p></div><div><strong>Receitas</strong><a href="#categorias">Café da Manhã</a><a href="#categorias">Almoço</a><a href="#categorias">Jantar</a><a href="#categorias">Sobremesas</a><a href="#categorias">Lanches</a></div><div><strong>Conta</strong><button type="button" data-open-modal="login">Entrar</button><button type="button" data-open-modal="signup">Cadastrar</button><a href="#receitas">Minhas Receitas</a><a href="#receitas">Favoritos</a></div><div><strong>Site</strong><a href="#top">Sobre nós</a><a href="#receitas">Blog</a><a href="#contato">Contato</a><a href="#privacidade">Política de Privacidade</a></div></div><div class="footer-bottom page-width">© 2025 Sobrevivência na Cozinha. Todos os direitos reservados.</div></footer>
+    <footer class="rodape-principal"><div class="largura-pagina grade-rodape"><div><a class="marca" href="#top"><span class="simbolo-marca">S</span><span>Sobrevivência na Cozinha</span></a><p>Receitas simples para todos os níveis.<br>Porque todo mundo merece cozinhar bem.</p></div><div><strong>Receitas</strong><a href="#categorias">Café da Manhã</a><a href="#categorias">Almoço</a><a href="#categorias">Jantar</a><a href="#categorias">Sobremesas</a><a href="#categorias">Lanches</a></div><div><strong>Conta</strong><button type="button" data-abrir-modal="entrar">Entrar</button><button type="button" data-abrir-modal="cadastro">Cadastrar</button><a href="#receitas">Minhas Receitas</a><a href="#receitas">Favoritos</a></div><div><strong>Site</strong><a href="#top">Sobre nós</a><a href="#receitas">Blog</a><a href="#contato">Contato</a><a href="#privacidade">Política de Privacidade</a></div></div><div class="rodape-inferior largura-pagina">© 2025 Sobrevivência na Cozinha. Todos os direitos reservados.</div></footer>
 
-    <div class="modal-backdrop" id="modal-backdrop" hidden>
-        <section class="auth-modal" id="login-modal" aria-modal="true" role="dialog" aria-labelledby="login-title" hidden><button class="modal-close" type="button" aria-label="Fechar">×</button><h2 id="login-title">Bem-vindo de volta</h2><p>Entre em sua conta para continuar</p><form class="auth-form" action="{% url 'signin' %}" method="post">{% csrf_token %}<label>E-mail ou usuário<input type="text" name="identifier" placeholder="seu@email.com ou usuário" autocomplete="username" required></label><label>Senha<input type="password" name="password" placeholder="••••••••" required></label><div class="form-options"><label><input type="checkbox"> Lembrar-me</label><a href="#">Esqueci a senha</a></div><button class="button auth-submit" type="submit">Entrar</button></form><div class="or-divider">Ou</div><div class="social-login"><button type="button">Google</button><button type="button">Facebook</button></div><p class="auth-switch">Não tem conta? <button type="button" data-open-modal="signup">Cadastre-se</button></p></section>
-        <section class="auth-modal" id="signup-modal" aria-modal="true" role="dialog" aria-labelledby="signup-title" hidden><button class="modal-close" type="button" aria-label="Fechar">×</button><h2 id="signup-title">Crie sua conta</h2><p>Acesse receitas e salve suas favoritas</p><form class="auth-form" action="{% url 'signup' %}" method="post">{% csrf_token %}<label>Apelido<input type="text" name="nickname" placeholder="Como quer ser chamado?" maxlength="30" required></label><label>E-mail<input type="email" name="email" placeholder="seu@email.com" required></label><label>Senha<input type="password" name="password1" placeholder="Mínimo 8 caracteres" minlength="8" required></label><label>Confirmar senha<input type="password" name="password2" placeholder="••••••••" minlength="8" required></label><label class="terms"><input type="checkbox" required> Concordo com os <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a></label><button class="button auth-submit" type="submit">Criar Conta</button></form><div class="or-divider">Ou</div><div class="social-login"><button type="button">Google</button><button type="button">Facebook</button></div><p class="auth-switch">Já tem conta? <button type="button" data-open-modal="login">Entre aqui</button></p></section>
-        <section class="recipe-modal" id="recipe-modal" aria-modal="true" role="dialog" aria-labelledby="recipe-modal-title" hidden><button class="modal-close" type="button" aria-label="Fechar">×</button><p class="eyebrow">Receita selecionada</p><h2 id="recipe-modal-title"></h2><p>Abra sua receita favorita para ver ingredientes, modo de preparo e salvar nos seus favoritos.</p><button class="button" type="button" data-open-modal="signup">Criar conta para salvar</button></section>
+    <div class="fundo-modal" id="fundo-modal" hidden>
+        <section class="modal-autenticacao" id="modal-entrar" aria-modal="true" role="dialog" aria-labelledby="titulo-entrar" hidden><button class="botao-fechar-modal" type="button" aria-label="Fechar">×</button><h2 id="titulo-entrar">Bem-vindo de volta</h2><p>Entre em sua conta para continuar</p><form class="formulario-autenticacao" action="{% url 'entrar' %}" method="post">{% csrf_token %}<label>E-mail ou usuário<input type="text" name="identificador" placeholder="seu@email.com ou usuário" autocomplete="username" required></label><label>Senha<input type="password" name="senha" placeholder="••••••••" required></label><div class="opcoes-formulario"><label><input type="checkbox"> Lembrar-me</label><a href="#">Esqueci a senha</a></div><button class="botao enviar-autenticacao" type="submit">Entrar</button></form><div class="divisor-ou">Ou</div><div class="acesso-social"><button type="button">Google</button><button type="button">Facebook</button></div><p class="alternar-autenticacao">Não tem conta? <button type="button" data-abrir-modal="cadastro">Cadastre-se</button></p></section>
+        <section class="modal-autenticacao" id="modal-cadastro" aria-modal="true" role="dialog" aria-labelledby="titulo-cadastro" hidden><button class="botao-fechar-modal" type="button" aria-label="Fechar">×</button><h2 id="titulo-cadastro">Crie sua conta</h2><p>Acesse receitas e salve suas favoritas</p><form class="formulario-autenticacao" action="{% url 'criar_conta' %}" method="post">{% csrf_token %}<label>Apelido<input type="text" name="apelido" placeholder="Como quer ser chamado?" maxlength="30" required></label><label>E-mail<input type="email" name="email" placeholder="seu@email.com" required></label><label>Senha<input type="password" name="senha1" placeholder="Mínimo 8 caracteres" minlength="8" required></label><label>Confirmar senha<input type="password" name="senha2" placeholder="••••••••" minlength="8" required></label><label class="termos-uso"><input type="checkbox" required> Concordo com os <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a></label><button class="botao enviar-autenticacao" type="submit">Criar Conta</button></form><div class="divisor-ou">Ou</div><div class="acesso-social"><button type="button">Google</button><button type="button">Facebook</button></div><p class="alternar-autenticacao">Já tem conta? <button type="button" data-abrir-modal="entrar">Entre aqui</button></p></section>
+        <section class="modal-receita" id="modal-receita" aria-modal="true" role="dialog" aria-labelledby="titulo-modal-receita" hidden><button class="botao-fechar-modal" type="button" aria-label="Fechar">×</button><p class="sobretitulo">Receita selecionada</p><h2 id="titulo-modal-receita"></h2><p>Abra sua receita favorita para ver ingredientes, modo de preparo e salvar nos seus favoritos.</p><button class="botao" type="button" data-abrir-modal="cadastro">Criar conta para salvar</button></section>
     </div>
-    <script src="{% static 'js/site.js' %}"></script>
+    <script src="{% static 'js/principal.js' %}"></script>
 </body>
 </html>

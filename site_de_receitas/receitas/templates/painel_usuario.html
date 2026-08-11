@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas receitas | Sobrevivência na Cozinha</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="pagina-receitas pagina-logada">
+    {% if messages %}<div class="mensagens-flutuantes" role="alert">{% for mensagem in messages %}<p class="mensagem-flutuante {{ mensagem.tags }}">{{ mensagem }}</p>{% endfor %}</div>{% endif %}
+    <header class="cabecalho-principal">
+        <div class="linha-cabecalho largura-pagina">
+            <a class="marca" href="{% url 'minhas_receitas' %}"><span class="simbolo-marca">S</span><span>Sobrevivência<small>na cozinha</small></span></a>
+            <form class="caixa-busca" action="{% url 'minhas_receitas' %}" method="get"><span>⌕</span><input type="search" name="busca" value="{{ busca }}" placeholder="Buscar receitas, ingredientes..." aria-label="Buscar receitas"></form>
+            <div class="acoes-conta"><a class="conta-usuario" href="{% url 'meu_perfil' %}"><span class="avatar-usuario">{{ user.first_name|first|upper }}</span>{{ user.first_name }}</a><form action="{% url 'sair' %}" method="post">{% csrf_token %}<button class="botao botao-contorno" type="submit">Sair</button></form></div>
+        </div>
+    </header>
+    <main>
+        <section class="secao-receitas largura-pagina" id="favoritos">
+            <nav class="navegacao-categorias-logada" aria-label="Filtrar receitas por categoria"><a class="{% if not categoria_ativa %}ativo{% endif %}" href="{% url 'minhas_receitas' %}">Todas</a>{% for categoria in categorias %}<a class="{% if categoria_ativa == categoria.categoria %}ativo{% endif %}" href="?categoria={{ categoria.categoria|urlencode }}">{{ categoria.categoria }}</a>{% endfor %}</nav>
+            <div class="cabecalho-secao cabecalho-painel"><div><h2>Receitas para você</h2><p>Abra uma receita para ver ingredientes e modo de preparo</p></div><form class="filtros-painel" method="get"><input type="hidden" name="busca" value="{{ busca }}"><select name="categoria" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option>{% for categoria in categorias %}<option value="{{ categoria.categoria }}" {% if categoria_ativa == categoria.categoria %}selected{% endif %}>{{ categoria.categoria }}</option>{% endfor %}</select><select name="ordenacao" aria-label="Ordenar receitas"><option value="recentes" {% if ordenacao == 'recentes' %}selected{% endif %}>Mais recentes</option><option value="faceis" {% if ordenacao == 'faceis' %}selected{% endif %}>Mais fáceis</option><option value="melhor_avaliadas" {% if ordenacao == 'melhor_avaliadas' %}selected{% endif %}>Melhores avaliadas</option></select><button class="botao botao-contorno" type="submit">Filtrar</button></form></div>
+            <div class="grade-receitas">
+                {% for receita in receitas %}
+                <article class="cartao-receita"><a class="link-receita" href="{% url 'detalhe_receita' receita.id %}"><img src="{{ receita.url_imagem }}" alt="{{ receita.titulo }}"><span class="etiqueta-categoria">{{ receita.categoria }}</span><div><h3>{{ receita.titulo }}</h3><p>◷ {{ receita.tempo_preparo }} minutos &nbsp; · &nbsp; {{ receita.dificuldade }}</p>{% if receita.total_avaliacoes %}<p>{{ receita.media_avaliacoes|floatformat:1 }}/5 · {{ receita.total_avaliacoes }} {% if receita.total_avaliacoes == 1 %}avaliação{% else %}avaliações{% endif %}</p>{% else %}<p>Sem avaliações</p>{% endif %}</div></a><form class="formulario-favorito" action="{% url 'alternar_favorito' receita.id %}" method="post">{% csrf_token %}<input type="hidden" name="proximo" value="{% url 'minhas_receitas' %}"><button class="botao-favorito {% if receita.id in ids_receitas_favoritas %}esta-favorito{% endif %}" type="submit" aria-label="Favoritar {{ receita.titulo }}">♥</button></form></article>
+                {% empty %}<p class="resultado-vazio">Nenhuma receita foi encontrada com esses filtros.</p>{% endfor %}
+            </div>
+        </section>
+    </main>
+</body>
+</html>

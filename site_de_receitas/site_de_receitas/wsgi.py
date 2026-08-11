@@ -1,16 +1,13 @@
-"""
-WSGI config for site_de_receitas project.
+"""Ponto de entrada WSGI do projeto Site de Receitas."""
 
-It exposes the WSGI callable as a module-level variable named ``application``.
+import os as sistema_operacional
 
-For more information on this file, see
-https://docs.djangoproject.com/en/6.0/howto/deployment/wsgi/
-"""
+from django.core.wsgi import get_wsgi_application as obter_aplicacao_wsgi
 
-import os
 
-from django.core.wsgi import get_wsgi_application
+sistema_operacional.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE", "site_de_receitas.settings"
+)
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'site_de_receitas.settings')
-
-application = get_wsgi_application()
+# ``application`` é o nome exigido por servidores WSGI.
+application = obter_aplicacao_wsgi()

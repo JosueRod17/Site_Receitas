@@ -1,16 +1,13 @@
-"""
-ASGI config for site_de_receitas project.
+"""Ponto de entrada ASGI do projeto Site de Receitas."""
 
-It exposes the ASGI callable as a module-level variable named ``application``.
+import os as sistema_operacional
 
-For more information on this file, see
-https://docs.djangoproject.com/en/6.0/howto/deployment/asgi/
-"""
+from django.core.asgi import get_asgi_application as obter_aplicacao_asgi
 
-import os
 
-from django.core.asgi import get_asgi_application
+sistema_operacional.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE", "site_de_receitas.settings"
+)
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'site_de_receitas.settings')
-
-application = get_asgi_application()
+# ``application`` é o nome exigido por servidores ASGI.
+application = obter_aplicacao_asgi()
