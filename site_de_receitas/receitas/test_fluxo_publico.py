@@ -2,7 +2,7 @@ from django.contrib.auth.models import User as Usuario
 from django.test import TestCase as CasoDeTeste
 from django.urls import reverse as reverter_url
 
-from .modelos import Avaliacao, Receita
+from .modelos import Avaliacao, Favorito, Receita
 from .visoes import receitas_com_media_avaliacoes
 
 
@@ -55,6 +55,7 @@ class TestesFluxoDeAutenticacao(CasoDeTeste):
             reverter_url("meu_perfil"),
             {
                 "apelido": "Novo nome",
+                "nome_usuario": "membro-login",
                 "email": "novo@exemplo.com",
                 "senha_atual": "senha-segura-123",
                 "nova_senha": "",
@@ -73,6 +74,7 @@ class TestesFluxoDeAutenticacao(CasoDeTeste):
             reverter_url("meu_perfil"),
             {
                 "apelido": "Membro",
+                "nome_usuario": "membro-login",
                 "email": "novo@exemplo.com",
                 "senha_atual": "",
                 "nova_senha": "",
@@ -83,6 +85,23 @@ class TestesFluxoDeAutenticacao(CasoDeTeste):
         self.assertEqual(resposta.status_code, 200)
         self.assertContains(resposta, 'data-senha-atual-visivel="true"')
         self.assertContains(resposta, "Informe sua senha atual")
+
+    def test_perfil_exibe_favoritos_em_aba_propria(self):
+        receita = Receita.objects.create(
+            titulo="Receita favorita",
+            categoria="Teste",
+            url_imagem="https://example.com/receita.jpg",
+            tempo_preparo=15,
+            dificuldade="Fácil",
+        )
+        Favorito.objects.create(usuario=self.membro, receita=receita)
+        self.cliente.force_login(self.membro)
+
+        resposta = self.cliente.get(f"{reverter_url('meu_perfil')}?aba=favoritos")
+
+        self.assertContains(resposta, "Minhas favoritas")
+        self.assertContains(resposta, "Receita favorita")
+        self.assertContains(resposta, "Remover")
 
 
 class TestesDeAvaliacoes(CasoDeTeste):

@@ -60,20 +60,26 @@
   });
 
   const formularioPerfil = document.querySelector('.formulario-perfil');
+  const campoApelido = formularioPerfil?.querySelector('input[name="apelido"]');
+  const campoNomeUsuario = formularioPerfil?.querySelector('input[name="nome_usuario"]');
   const campoEmail = formularioPerfil?.querySelector('input[name="email"]');
   const blocoSenhaAtual = formularioPerfil?.querySelector('#perfil-senha-atual');
   const camposNovaSenha = formularioPerfil?.querySelector('#perfil-novas-senhas');
   const botaoAlterarSenha = formularioPerfil?.querySelector('#botao-alterar-senha-perfil');
   const campoAlteracaoSenha = formularioPerfil?.querySelector('#alteracao-senha-solicitada');
 
-  if (campoEmail && blocoSenhaAtual && camposNovaSenha && botaoAlterarSenha && campoAlteracaoSenha) {
+  if (campoApelido && campoNomeUsuario && campoEmail && blocoSenhaAtual && camposNovaSenha && botaoAlterarSenha && campoAlteracaoSenha) {
+    const apelidoInicial = campoApelido.defaultValue.trim();
+    const nomeUsuarioInicial = campoNomeUsuario.defaultValue.trim().toLowerCase();
     const emailInicial = campoEmail.defaultValue.trim().toLowerCase();
     let alteracaoSenhaAberta = formularioPerfil.dataset.alteracaoSenhaAberta === 'true';
     const senhaAtualDeveFicarVisivel = formularioPerfil.dataset.senhaAtualVisivel === 'true';
 
     const atualizarCamposDeSeguranca = () => {
+      const apelidoFoiAlterado = campoApelido.value.trim() !== apelidoInicial;
+      const nomeUsuarioFoiAlterado = campoNomeUsuario.value.trim().toLowerCase() !== nomeUsuarioInicial;
       const emailFoiAlterado = campoEmail.value.trim().toLowerCase() !== emailInicial;
-      blocoSenhaAtual.hidden = !(emailFoiAlterado || alteracaoSenhaAberta || senhaAtualDeveFicarVisivel);
+      blocoSenhaAtual.hidden = !(apelidoFoiAlterado || nomeUsuarioFoiAlterado || emailFoiAlterado || alteracaoSenhaAberta || senhaAtualDeveFicarVisivel);
       camposNovaSenha.hidden = !alteracaoSenhaAberta;
       botaoAlterarSenha.classList.toggle('esta-aberto', alteracaoSenhaAberta);
       botaoAlterarSenha.setAttribute('aria-expanded', String(alteracaoSenhaAberta));
@@ -81,6 +87,8 @@
       campoAlteracaoSenha.value = alteracaoSenhaAberta ? '1' : '0';
     };
 
+    campoApelido.addEventListener('input', atualizarCamposDeSeguranca);
+    campoNomeUsuario.addEventListener('input', atualizarCamposDeSeguranca);
     campoEmail.addEventListener('input', atualizarCamposDeSeguranca);
     botaoAlterarSenha.addEventListener('click', () => {
       alteracaoSenhaAberta = !alteracaoSenhaAberta;

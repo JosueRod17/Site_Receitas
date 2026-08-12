@@ -68,6 +68,7 @@ class FormularioAvaliacaoReceita(forms.Form):
 
 class FormularioPerfil(forms.Form):
     apelido = forms.CharField(max_length=30)
+    nome_usuario = forms.CharField(max_length=150)
     email = forms.EmailField(widget=forms.EmailInput(attrs={"autocomplete": "email"}))
     senha_atual = forms.CharField(
         required=False,
@@ -87,7 +88,18 @@ class FormularioPerfil(forms.Form):
         super().__init__(*argumentos, **argumentos_nomeados)
         self.usuario = usuario
         self.fields["apelido"].initial = usuario.first_name
+        self.fields["nome_usuario"].initial = usuario.username
         self.fields["email"].initial = usuario.email
+
+    def clean_nome_usuario(self):
+        nome_usuario = self.cleaned_data["nome_usuario"].strip()
+        if Usuario.objects.filter(
+            Q(username__iexact=nome_usuario) | Q(email__iexact=nome_usuario)
+        ).exclude(pk=self.usuario.pk).exists():
+            raise forms.ValidationError(
+                "Este nome de usuário já está sendo usado por outra conta."
+            )
+        return nome_usuario
 
     def clean_email(self):
         email = self.cleaned_data["email"].lower()
@@ -100,14 +112,23 @@ class FormularioPerfil(forms.Form):
 
     def clean(self):
         dados = super().clean()
+        nome_usuario = dados.get("nome_usuario", self.usuario.username)
         email = dados.get("email", self.usuario.email)
         senha_atual = dados.get("senha_atual")
         nova_senha = dados.get("nova_senha")
         confirmacao_nova_senha = dados.get("confirmacao_nova_senha")
+        apelido = dados.get("apelido", self.usuario.first_name)
+        apelido_alterado = apelido != self.usuario.first_name
+        nome_usuario_alterado = nome_usuario.casefold() != self.usuario.username.casefold()
         email_alterado = email.casefold() != self.usuario.email.casefold()
         deseja_alterar_senha = bool(nova_senha or confirmacao_nova_senha)
 
-        if email_alterado or deseja_alterar_senha:
+        if (
+            apelido_alterado
+            or nome_usuario_alterado
+            or email_alterado
+            or deseja_alterar_senha
+        ):
             if not senha_atual:
                 self.add_error(
                     "senha_atual",
@@ -128,11 +149,16 @@ class FormularioPerfil(forms.Form):
                         "As novas senhas não coincidem.",
                     )
                 else:
-                    nome_usuario = self.usuario.username
-                    if nome_usuario.casefold() == self.usuario.email.casefold():
-                        nome_usuario = email
+                    nome_usuario_candidato = nome_usuario
+                    if (
+                        self.usuario.username.casefold()
+                        == self.usuario.email.casefold()
+                        and nome_usuario.casefold()
+                        == self.usuario.username.casefold()
+                    ):
+                        nome_usuario_candidato = email
                     usuario_candidato = Usuario(
-                        username=nome_usuario,
+                        username=nome_usuario_candidato,
                         email=email,
                         first_name=dados.get("apelido", self.usuario.first_name),
                         last_name=self.usuario.last_name,
@@ -145,8 +171,14 @@ class FormularioPerfil(forms.Form):
 
     def salvar(self):
         self.usuario.first_name = self.cleaned_data["apelido"]
-        if self.usuario.username.casefold() == self.usuario.email.casefold():
+        nome_usuario = self.cleaned_data["nome_usuario"]
+        if (
+            self.usuario.username.casefold() == self.usuario.email.casefold()
+            and nome_usuario.casefold() == self.usuario.username.casefold()
+        ):
             self.usuario.username = self.cleaned_data["email"]
+        else:
+            self.usuario.username = nome_usuario
         self.usuario.email = self.cleaned_data["email"]
         if self.cleaned_data.get("nova_senha"):
             self.usuario.set_password(self.cleaned_data["nova_senha"])

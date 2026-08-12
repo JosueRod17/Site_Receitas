@@ -199,6 +199,12 @@ def avaliar_receita(requisicao, id_receita):
 @exige_login
 def meu_perfil(requisicao):
     formulario = FormularioPerfil(requisicao.user, requisicao.POST or None)
+    aba_ativa = requisicao.GET.get("aba", "perfil")
+    if aba_ativa not in {"perfil", "favoritos"}:
+        aba_ativa = "perfil"
+    favoritos = Favorito.objects.filter(usuario=requisicao.user).select_related(
+        "receita"
+    )
     if requisicao.method == "POST" and formulario.is_valid():
         usuario = formulario.salvar()
         atualizar_hash_sessao(requisicao, usuario)
@@ -211,6 +217,8 @@ def meu_perfil(requisicao):
         "perfil.html",
         {
             "formulario": formulario,
+            "aba_ativa": aba_ativa,
+            "favoritos": favoritos,
             "nome_rota_voltar": (
                 "painel_gestao"
                 if requisicao.user.is_superuser

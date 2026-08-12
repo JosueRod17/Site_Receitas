@@ -16,6 +16,7 @@ class TestesFormularioPerfil(CasoDeTeste):
     def dados_do_formulario(self, **substituicoes):
         dados = {
             "apelido": "Ana",
+            "nome_usuario": "ana@example.com",
             "email": "ana@example.com",
             "senha_atual": "",
             "nova_senha": "",
@@ -56,6 +57,7 @@ class TestesFormularioPerfil(CasoDeTeste):
             administrador,
             self.dados_do_formulario(
                 apelido="Admin",
+                nome_usuario="administrador",
                 email="novo-administrador@example.com",
                 senha_atual="senha-segura-123",
             ),
@@ -90,13 +92,47 @@ class TestesFormularioPerfil(CasoDeTeste):
         self.assertFalse(formulario.is_valid())
         self.assertIn("senha_atual", formulario.errors)
 
-    def test_permite_alterar_apelido_sem_senha_atual(self):
+    def test_exige_senha_atual_para_alterar_apelido(self):
         formulario = FormularioPerfil(
             self.usuario,
             self.dados_do_formulario(apelido="Ana Maria"),
         )
 
+        self.assertFalse(formulario.is_valid())
+        self.assertIn("senha_atual", formulario.errors)
+
+    def test_permite_alterar_apelido_com_senha_atual(self):
+        formulario = FormularioPerfil(
+            self.usuario,
+            self.dados_do_formulario(
+                apelido="Ana Maria",
+                senha_atual="senha-segura-123",
+            ),
+        )
+
         self.assertTrue(formulario.is_valid())
+
+    def test_exige_senha_atual_para_alterar_nome_de_usuario(self):
+        formulario = FormularioPerfil(
+            self.usuario,
+            self.dados_do_formulario(nome_usuario="ana-cozinha"),
+        )
+
+        self.assertFalse(formulario.is_valid())
+        self.assertIn("senha_atual", formulario.errors)
+
+    def test_permite_alterar_nome_de_usuario_com_senha_atual(self):
+        formulario = FormularioPerfil(
+            self.usuario,
+            self.dados_do_formulario(
+                nome_usuario="ana-cozinha",
+                senha_atual="senha-segura-123",
+            ),
+        )
+
+        self.assertTrue(formulario.is_valid())
+        usuario = formulario.salvar()
+        self.assertEqual(usuario.username, "ana-cozinha")
 
     def test_rejeita_email_que_e_nome_de_usuario_de_outra_pessoa(self):
         Usuario.objects.create_user(

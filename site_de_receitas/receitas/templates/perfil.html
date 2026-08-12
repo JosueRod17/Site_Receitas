@@ -7,35 +7,68 @@
     <header class="cabecalho-principal"><div class="linha-cabecalho largura-pagina"><a class="marca" href="{% url nome_rota_voltar %}"><span class="simbolo-marca">S</span><span>Sobrevivência<small>na cozinha</small></span></a><div></div><div class="acoes-conta"><a class="conta-usuario" href="{% url nome_rota_voltar %}"><span class="avatar-usuario">{{ user.first_name|first|upper }}</span>{{ user.first_name }}</a></div></div></header>
     <main class="conteudo-perfil largura-pagina">
         <a class="link-voltar" href="{% url nome_rota_voltar %}">‹ Voltar</a>
-        <section class="painel-perfil" aria-labelledby="titulo-perfil">
-            <h1 id="titulo-perfil">Meu perfil</h1>
-            <p>Atualize seu apelido, e-mail cadastrado e, quando precisar, sua senha.</p>
-            <form method="post" class="formulario-perfil" data-alteracao-senha-aberta="{% if formulario.nova_senha.errors or formulario.confirmacao_nova_senha.errors or request.POST.solicitacao_alteracao_senha == '1' %}true{% else %}false{% endif %}" data-senha-atual-visivel="{% if formulario.senha_atual.errors %}true{% else %}false{% endif %}">
-                {% csrf_token %}
-                <input type="hidden" name="solicitacao_alteracao_senha" id="alteracao-senha-solicitada" value="{% if request.POST.solicitacao_alteracao_senha == '1' %}1{% else %}0{% endif %}">
-                {% if formulario.non_field_errors %}<div class="erro-formulario">{{ formulario.non_field_errors }}</div>{% endif %}
-                <label for="{{ formulario.apelido.id_for_label }}">Apelido{{ formulario.apelido }}</label>
-                {% for erro in formulario.apelido.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
-                <label for="{{ formulario.email.id_for_label }}">E-mail cadastrado{{ formulario.email }}</label>
-                {% for erro in formulario.email.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
-                <p class="aviso-seguranca-perfil">Para trocar o e-mail, confirme sua senha atual.</p>
-                <div class="perfil-senha-atual" id="perfil-senha-atual" hidden>
-                    <label for="{{ formulario.senha_atual.id_for_label }}">Senha atual{{ formulario.senha_atual }}</label>
-                    {% for erro in formulario.senha_atual.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+        <nav class="abas-perfil" aria-label="Seções do meu perfil">
+            <a class="{% if aba_ativa == 'perfil' %}esta-ativa{% endif %}" href="{% url 'meu_perfil' %}">Dados pessoais</a>
+            <a class="{% if aba_ativa == 'favoritos' %}esta-ativa{% endif %}" href="{% url 'meu_perfil' %}?aba=favoritos">Favoritos <span>{{ favoritos|length }}</span></a>
+        </nav>
+
+        {% if aba_ativa == "favoritos" %}
+            <section class="painel-perfil painel-favoritos" aria-labelledby="titulo-favoritos">
+                <h1 id="titulo-favoritos">Minhas favoritas</h1>
+                <p>Receitas que você salvou para preparar quando quiser.</p>
+                <div class="lista-favoritos-perfil">
+                    {% for favorito in favoritos %}
+                        <article class="cartao-favorito-perfil">
+                            <a href="{% url 'detalhe_receita' favorito.receita.id %}"><img src="{{ favorito.receita.url_imagem }}" alt="{{ favorito.receita.titulo }}"></a>
+                            <div>
+                                <span>{{ favorito.receita.categoria }}</span>
+                                <h2><a href="{% url 'detalhe_receita' favorito.receita.id %}">{{ favorito.receita.titulo }}</a></h2>
+                                <p>◷ {{ favorito.receita.tempo_preparo }} minutos · {{ favorito.receita.dificuldade }}</p>
+                            </div>
+                            <form action="{% url 'alternar_favorito' favorito.receita.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="proximo" value="{% url 'meu_perfil' %}?aba=favoritos">
+                                <button class="botao-remover-favorito" type="submit">Remover</button>
+                            </form>
+                        </article>
+                    {% empty %}
+                        <div class="estado-vazio-favoritos"><span aria-hidden="true">♡</span><h2>Nenhuma receita salva ainda</h2><p>Explore as receitas e use o coração para guardar as suas preferidas.</p><a class="botao" href="{% url 'minhas_receitas' %}">Explorar receitas</a></div>
+                    {% endfor %}
                 </div>
-                <div class="acao-senha-perfil">
-                    <div><p class="titulo-secao-perfil">Quer trocar sua senha?</p><p>Use este botão para liberar os campos de alteração.</p></div>
-                    <button class="botao-alterar-senha-perfil" type="button" id="botao-alterar-senha-perfil" aria-controls="perfil-novas-senhas" aria-expanded="false">Alterar senha</button>
-                </div>
-                <div class="perfil-novas-senhas" id="perfil-novas-senhas" hidden>
-                    <label for="{{ formulario.nova_senha.id_for_label }}">Nova senha{{ formulario.nova_senha }}</label>
-                    {% for erro in formulario.nova_senha.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
-                    <label for="{{ formulario.confirmacao_nova_senha.id_for_label }}">Confirmar nova senha{{ formulario.confirmacao_nova_senha }}</label>
-                    {% for erro in formulario.confirmacao_nova_senha.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
-                </div>
-                <button class="botao" type="submit">Salvar alterações</button>
-            </form>
-        </section>
+            </section>
+        {% else %}
+            <section class="painel-perfil" aria-labelledby="titulo-perfil">
+                <h1 id="titulo-perfil">Meu perfil</h1>
+                <p>Atualize seu apelido, e-mail cadastrado e, quando precisar, sua senha.</p>
+                <form method="post" class="formulario-perfil" data-alteracao-senha-aberta="{% if formulario.nova_senha.errors or formulario.confirmacao_nova_senha.errors or request.POST.solicitacao_alteracao_senha == '1' %}true{% else %}false{% endif %}" data-senha-atual-visivel="{% if formulario.senha_atual.errors %}true{% else %}false{% endif %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="solicitacao_alteracao_senha" id="alteracao-senha-solicitada" value="{% if request.POST.solicitacao_alteracao_senha == '1' %}1{% else %}0{% endif %}">
+                    {% if formulario.non_field_errors %}<div class="erro-formulario">{{ formulario.non_field_errors }}</div>{% endif %}
+                    <label for="{{ formulario.apelido.id_for_label }}">Apelido{{ formulario.apelido }}</label>
+                    {% for erro in formulario.apelido.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+                    <label for="{{ formulario.nome_usuario.id_for_label }}">Nome de usuário{{ formulario.nome_usuario }}</label>
+                    {% for erro in formulario.nome_usuario.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+                    <label for="{{ formulario.email.id_for_label }}">E-mail cadastrado{{ formulario.email }}</label>
+                    {% for erro in formulario.email.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+                    <p class="aviso-seguranca-perfil">Para trocar o apelido, o nome de usuário ou o e-mail, confirme sua senha atual.</p>
+                    <div class="perfil-senha-atual" id="perfil-senha-atual" hidden>
+                        <label for="{{ formulario.senha_atual.id_for_label }}">Senha atual{{ formulario.senha_atual }}</label>
+                        {% for erro in formulario.senha_atual.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+                    </div>
+                    <div class="acao-senha-perfil">
+                        <div><p class="titulo-secao-perfil">Quer trocar sua senha?</p><p>Use este botão para liberar os campos de alteração.</p></div>
+                        <button class="botao-alterar-senha-perfil" type="button" id="botao-alterar-senha-perfil" aria-controls="perfil-novas-senhas" aria-expanded="false">Alterar senha</button>
+                    </div>
+                    <div class="perfil-novas-senhas" id="perfil-novas-senhas" hidden>
+                        <label for="{{ formulario.nova_senha.id_for_label }}">Nova senha{{ formulario.nova_senha }}</label>
+                        {% for erro in formulario.nova_senha.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+                        <label for="{{ formulario.confirmacao_nova_senha.id_for_label }}">Confirmar nova senha{{ formulario.confirmacao_nova_senha }}</label>
+                        {% for erro in formulario.confirmacao_nova_senha.errors %}<p class="erro-formulario">{{ erro }}</p>{% endfor %}
+                    </div>
+                    <button class="botao" type="submit">Salvar alterações</button>
+                </form>
+            </section>
+        {% endif %}
     </main>
     <script src="{% static 'js/principal.js' %}"></script>
 </body>
